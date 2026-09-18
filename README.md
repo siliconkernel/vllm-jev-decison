@@ -64,7 +64,10 @@ an enum category and a boolean urgency flag:
 ```
 
 `mode` is optional and only accepts `classify`. `auto`, `generate`, output-token
-budgets and nonfinite fields are rejected with HTTP 422. No fallback is run.
+budgets and nonfinite fields are rejected before any model call. Nonfinite schemas
+return HTTP 422; a rejected `mode` value is a request-field error, returned as
+HTTP 400 by the native plugin and HTTP 422 by the bridge's plain FastAPI stack.
+No fallback is run.
 
 The response contains `accepted`, `value`, per-field `decisions`, and `usage`.
 If any classified field misses the threshold, `accepted=false` and `value=null`.
@@ -138,9 +141,12 @@ target; pooling-only models, multimodal input, LoRA routing and arbitrary tokeni
 combinations are not validated. “Compatible models” does not mean “any model.”
 
 Local tests cover finite planning, rejected generation modes, authentication,
-abstention, accounting, cancellation and a fake-engine adapter contract. The
-native interface is checked against vLLM 0.29.0 source. **Native GPU plugin startup
-remains unverified.** Historical bridge smoke records include the earlier mixed
+abstention, accounting, cancellation and a fake-engine adapter contract. **Native
+GPU plugin startup is verified**: the plugin loads into a real vLLM API server on
+NVIDIA GB10, serves both routes, reconciles its token accounting against the engine's
+own `/metrics` counters, and releases engine work when a client disconnects. Those
+runs were recorded on a vLLM build newer than 0.29.0 that carries the same
+`EndpointPlugin` interface. Historical bridge smoke records include the earlier mixed
 prototype, which is no longer supported; see [validation records](results/README.md).
 No universal speedup, production readiness or semantic-correctness guarantee is claimed.
 
@@ -155,5 +161,7 @@ python -m build
 python docs/render_diagrams.py
 ```
 
-[Live classification smoke](benchmarks/smoke_http.py) writes to a new output
-directory. Preserve failed records. MIT licensed; vLLM retains its own license.
+[Native smoke](benchmarks/smoke_native.py) runs against a loaded plugin and refuses
+to record evidence for the bridge; [bridge smoke](benchmarks/smoke_http.py) covers the
+other path. Both write to a new output directory. Preserve failed records.
+MIT licensed; vLLM retains its own license.

@@ -59,7 +59,8 @@ curl http://localhost:8000/plugins/jev-decison/infer \
 ```
 
 `mode` 可省略，只接受 `classify`。`auto`、`generate`、输出生成预算和非有限字段
-均返回 HTTP 422，不触发回退。
+一律在调用模型之前被拒绝，不触发回退。非有限 Schema 返回 HTTP 422；非法的 `mode`
+属于请求字段错误，原生插件下返回 HTTP 400，bridge 的纯 FastAPI 栈下返回 HTTP 422。
 
 响应包含 `accepted`、`value`、逐字段 `decisions` 和 `usage`。
 任一分类字段低于阈值时，`accepted=false`、`value=null`；`decisions` 中的候选仅供诊断。
@@ -118,7 +119,9 @@ bridge 也仅支持分类，后端明确标记为 `http_bridge`。只要求上�
 Pooling、多模态、LoRA 路由及所有 tokenizer 组合尚未验证，“兼容模型”不是“任意模型”。
 
 本地测试覆盖分类规划、拒绝生成请求、鉴权、阈值、用量、取消与模拟引擎契约。
-接口核对 vLLM 0.29.0 源码，**原生 GPU 服务的插件启动仍未验收**。
+**原生 GPU 服务的插件启动已验收**：插件在 NVIDIA GB10 上装载进真实的 vLLM API server
+进程、两条路由均可用、用量记账与引擎自身 `/metrics` 计数完全对账，客户端断开时确实
+释放引擎算力。相关运行使用的 vLLM 构建新于 0.29.0，但携带同一套 `EndpointPlugin` 接口。
 历史 bridge 记录保留了早期组合原型，该能力现已删除，详见[验证记录](results/README.md)。
 目前不保证普遍加速、生产可用或语义正确。
 
@@ -133,5 +136,6 @@ python -m build
 python docs/render_diagrams.py
 ```
 
-[实测脚本](benchmarks/smoke_http.py)只测试分类及拒绝路径，输出使用新目录，保留失败记录。
+[原生实测脚本](benchmarks/smoke_native.py)针对已装载的插件运行，后端为 bridge 时拒绝写入记录；
+[bridge 实测脚本](benchmarks/smoke_http.py)覆盖另一条路径。两者都写入新目录，保留失败记录。
 采用 MIT 许可；vLLM 保留自身许可。

@@ -7,8 +7,8 @@
 ![原生插件与 HTTP bridge](../assets/zh-CN/deployment.svg)
 
 原生插件面向 **vLLM 0.29.0**，安装在 API 服务所在环境，启动服务时加载。
-可选 HTTP bridge 连接已运行的服务，无需重启模型。当前真实模型记录验证的是 bridge；
-原生插件随 GPU 服务启动的验收尚未完成。
+可选 HTTP bridge 连接已运行的服务，无需重启模型。原生插件随 GPU 服务启动已在
+NVIDIA GB10 上验收，具体运行记录及其不能证明的内容见[验证记录](../results/README.md)。
 
 ## 1. 从仓库安装
 
@@ -129,7 +129,8 @@ bridge 无法验证上游启动参数，且忽略 HTTP 代理环境变量，直�
 | doctor 找不到 vLLM | 在服务环境安装原生依赖，或明确使用 bridge |
 | 路由返回 404 | 检查 allowlist、安装环境、vLLM 版本及启动日志 |
 | HTTP 401 | 核对 Bearer 密钥；bridge 与上游密钥独立配置 |
-| HTTP 422 | 检查 Schema 限制、引用、非有限字段或不支持的模式 |
+| HTTP 400 | 请求字段非法，通常是 `mode`；原生服务把请求校验错误映射为 400 |
+| HTTP 422 | 检查 Schema 限制、引用或非有限字段 |
 | HTTP 502 | 检查上游兼容性、单 Token 标签、原始 logprob 与候选 Token 支持 |
 | HTTP 504 | 整体推理超时，检查引擎负载及任务规模 |
 | accepted=false | 分类阈值拒绝了字段，不要执行诊断候选 |

@@ -1,0 +1,23 @@
+{
+  "version": {
+    "version": "0.1.dev20051+g487ecf187"
+  },
+  "capabilities": {
+    "backend": "vllm_endpoint_plugin",
+    "model": "/model",
+    "max_choices": 16,
+    "max_fields": 32,
+    "modes": [
+      "classify"
+    ],
+    "free_form_generation": false,
+    "schema_draft": "2020-12",
+    "schema_refs": false,
+    "input": "text",
+    "probabilities": "uncalibrated conditional label probabilities",
+    "classification": "one engine output token per nonconstant finite field; normal sampler still used",
+    "kv": "ordinary vLLM prefix caching if configured; no retained-session fusion"
+  },
+  "model": "Qwen3-0.6B",
+  "validation_scope": "Native vLLM endpoint plugin loaded in the server process; no HTTP bridge involved"
+}

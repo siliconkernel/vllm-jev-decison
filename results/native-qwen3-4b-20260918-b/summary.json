@@ -1,0 +1,6 @@
+{
+  "passed": 8,
+  "total": 8,
+  "accounting_reconciled": true,
+  "scope": "Native endpoint-plugin classification, rejection and accounting smoke. Semantic cases depend on the served model; no speed, calibration or universal-model claim."
+}

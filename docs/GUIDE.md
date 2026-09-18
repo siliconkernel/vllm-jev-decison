@@ -9,7 +9,8 @@
 The native plugin targets **vLLM 0.29.0** and requires installation in its API
 server environment, followed by a normal server start. The optional HTTP bridge
 connects to an already-running server without changing it. Native GPU plugin
-startup remains unverified; retained live-model records cover the bridge only.
+startup is verified on NVIDIA GB10; see [validation records](../results/README.md)
+for the recorded runs and for what those runs do not establish.
 
 ## 1. Install from this repository
 
@@ -145,7 +146,8 @@ The bridge ignores proxy environment variables and connects directly.
 | `doctor` reports missing vLLM | Install the native extra in the server environment, or use the bridge explicitly |
 | Plugin route returns 404 | Check `VLLM_PLUGINS`, installed entry points, vLLM version and startup logs |
 | HTTP 401 | Use the configured Bearer key; bridge and upstream keys are separate |
-| HTTP 422 | Check schema limits, unsupported references or nonfinite fields or unsupported modes |
+| HTTP 400 | A request field is invalid, most often `mode`; the native server maps request validation to 400 |
+| HTTP 422 | Check schema limits, unsupported references or nonfinite fields |
 | HTTP 502 | Inspect upstream compatibility, token labels, requested raw logprobs and candidate-token compatibility |
 | HTTP 504 | The overall inference deadline expired; inspect engine load and task size |
 | `accepted=false` | The classification threshold rejected at least one field; do not dispatch diagnostic values |

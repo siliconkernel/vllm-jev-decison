@@ -1,0 +1,15 @@
+{
+  "reported": {
+    "input_tokens": 1554,
+    "classification_tokens": 7,
+    "generated_tokens": 0,
+    "engine_requests": 7
+  },
+  "engine_metrics": {
+    "prompt_tokens": 1554.0,
+    "generation_tokens": 7.0
+  },
+  "input_tokens_match": true,
+  "classification_tokens_match": true,
+  "note": "Engine generation tokens must equal reported classification transport tokens; generated_tokens stays zero."
+}
