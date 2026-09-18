@@ -41,9 +41,12 @@ vllm-jev-decison doctor
 export MODEL=/absolute/path/to/your/model
 # 在当前 shell 或部署密钥配置中设置 VLLM_API_KEY。
 export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
-vllm serve "$MODEL" --host 127.0.0.1 --port 8000 \
-  --logprobs-mode raw_logprobs --max-logprobs 16
+vllm serve "$MODEL" --host 127.0.0.1 --port 8000 --logprobs-mode raw_logprobs
 ```
+
+`max_logprobs` 必须不低于 16。vLLM 默认为 20，所以上面没有显式写成 16 ——
+那样会平白降低同一服务上其他调用方的上限。低于 16 时插件拒绝初始化并在接口上
+报告，服务其余部分照常工作。
 
 allowlist 中也要包含当前部署需要的其他插件。示例仅监听本机；供其他机器访问时，
 使用自己的鉴权与网络入口。插件继承 vLLM 配置的 API 密钥，复用现有 EngineClient。

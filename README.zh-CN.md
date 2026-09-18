@@ -22,10 +22,12 @@ cd vllm-jev-decison
 pip install '.[vllm]'
 vllm-jev-decison doctor
 export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
-vllm serve YOUR_MODEL --logprobs-mode raw_logprobs --max-logprobs 16
+vllm serve YOUR_MODEL --logprobs-mode raw_logprobs
 ```
 
-已有该版本 vLLM 时可用 `pip install .`。allowlist 保留其他必需插件。
+已有该版本 vLLM 时可用 `pip install .`。插件要求 `max_logprobs` 不低于 16；
+vLLM 默认值 20 已满足，只有部署中调低过才需要显式抬高。`raw_logprobs` 同样是
+vLLM 默认值，显式传入是为了默认值变化时仍然成立。allowlist 保留其他必需插件。
 使用 `VLLM_API_KEY` 或 `--api-key` 配置鉴权。当前从本仓库安装，不代表已发布 PyPI 包。
 完整步骤与排错见[安装指南](docs/GUIDE.zh-CN.md)。
 

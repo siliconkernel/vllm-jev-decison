@@ -25,11 +25,14 @@ cd vllm-jev-decison
 pip install '.[vllm]'
 vllm-jev-decison doctor
 export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
-vllm serve YOUR_MODEL --logprobs-mode raw_logprobs --max-logprobs 16
+vllm serve YOUR_MODEL --logprobs-mode raw_logprobs
 ```
 
-If that vLLM version is already installed, use `pip install .`. Preserve other
-required plugins in the allowlist. Configure `VLLM_API_KEY` or vLLM `--api-key`
+If that vLLM version is already installed, use `pip install .`. The plugin needs
+`max_logprobs` at 16 or higher; vLLM's default of 20 already satisfies this, so
+raise it only if your deployment lowered it. `raw_logprobs` is also the vLLM
+default and is passed explicitly so the requirement survives a default change.
+Preserve other required plugins in the allowlist. Configure `VLLM_API_KEY` or vLLM `--api-key`
 for authentication. The package is installed from this repository, not a claimed
 PyPI release. [Full installation and troubleshooting guide](docs/GUIDE.md).
 

@@ -45,9 +45,13 @@ or local model directory. Do not commit the key.
 export MODEL=/absolute/path/to/your/model
 # Set VLLM_API_KEY in your shell or deployment secret configuration.
 export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
-vllm serve "$MODEL" --host 127.0.0.1 --port 8000 \
-  --logprobs-mode raw_logprobs --max-logprobs 16
+vllm serve "$MODEL" --host 127.0.0.1 --port 8000 --logprobs-mode raw_logprobs
 ```
+
+`max_logprobs` must be 16 or higher. vLLM defaults to 20, so the flag is omitted
+above rather than set to 16, which would needlessly lower the limit for every
+other consumer of the same server. The plugin refuses to initialize below 16 and
+reports it on the endpoint; the rest of the server keeps serving.
 
 The plugin allowlist must include any other plugins needed by your deployment.
 The examples bind to loopback. Configure your normal authenticated network ingress
