@@ -1,0 +1,46 @@
+{"case": 0, "order": ["billing", "technical", "other"], "value": "billing", "position": 0, "confidence": 0.9999999998899476, "expected": "billing", "correct": true}
+{"case": 0, "order": ["billing", "other", "technical"], "value": "billing", "position": 0, "confidence": 0.9999999999303248, "expected": "billing", "correct": true}
+{"case": 0, "order": ["technical", "billing", "other"], "value": "billing", "position": 1, "confidence": 0.9999999999608953, "expected": "billing", "correct": true}
+{"case": 0, "order": ["technical", "other", "billing"], "value": "billing", "position": 2, "confidence": 0.9999999997207649, "expected": "billing", "correct": true}
+{"case": 0, "order": ["other", "billing", "technical"], "value": "billing", "position": 1, "confidence": 0.9999999997707709, "expected": "billing", "correct": true}
+{"case": 0, "order": ["other", "technical", "billing"], "value": "billing", "position": 2, "confidence": 0.9999999999927469, "expected": "billing", "correct": true}
+{"case": 1, "order": ["billing", "technical", "other"], "value": "technical", "position": 1, "confidence": 0.9999999999686793, "expected": "technical", "correct": true}
+{"case": 1, "order": ["billing", "other", "technical"], "value": "technical", "position": 2, "confidence": 0.9999999999875975, "expected": "technical", "correct": true}
+{"case": 1, "order": ["technical", "billing", "other"], "value": "technical", "position": 0, "confidence": 0.9999999999969764, "expected": "technical", "correct": true}
+{"case": 1, "order": ["technical", "other", "billing"], "value": "technical", "position": 0, "confidence": 0.9999999999995914, "expected": "technical", "correct": true}
+{"case": 1, "order": ["other", "billing", "technical"], "value": "technical", "position": 2, "confidence": 0.9999999999752844, "expected": "technical", "correct": true}
+{"case": 1, "order": ["other", "technical", "billing"], "value": "technical", "position": 1, "confidence": 0.9999999999664304, "expected": "technical", "correct": true}
+{"case": 2, "order": ["billing", "technical", "other"], "value": "other", "position": 2, "confidence": 0.9999999999393896, "expected": "other", "correct": true}
+{"case": 2, "order": ["billing", "other", "technical"], "value": "other", "position": 1, "confidence": 0.9999999998916067, "expected": "other", "correct": true}
+{"case": 2, "order": ["technical", "billing", "other"], "value": "other", "position": 2, "confidence": 0.9999999999911571, "expected": "other", "correct": true}
+{"case": 2, "order": ["technical", "other", "billing"], "value": "other", "position": 1, "confidence": 0.9999999999592508, "expected": "other", "correct": true}
+{"case": 2, "order": ["other", "billing", "technical"], "value": "other", "position": 0, "confidence": 0.9999999999995077, "expected": "other", "correct": true}
+{"case": 2, "order": ["other", "technical", "billing"], "value": "other", "position": 0, "confidence": 0.9999999999997957, "expected": "other", "correct": true}
+{"case": 3, "order": ["positive", "negative", "neutral"], "value": "positive", "position": 0, "confidence": 0.9999999999966827, "expected": "positive", "correct": true}
+{"case": 3, "order": ["positive", "neutral", "negative"], "value": "positive", "position": 0, "confidence": 0.9999999999941074, "expected": "positive", "correct": true}
+{"case": 3, "order": ["negative", "positive", "neutral"], "value": "positive", "position": 1, "confidence": 0.9999999997655051, "expected": "positive", "correct": true}
+{"case": 3, "order": ["negative", "neutral", "positive"], "value": "positive", "position": 2, "confidence": 0.9999999999564593, "expected": "positive", "correct": true}
+{"case": 3, "order": ["neutral", "positive", "negative"], "value": "positive", "position": 1, "confidence": 0.9999999999873561, "expected": "positive", "correct": true}
+{"case": 3, "order": ["neutral", "negative", "positive"], "value": "positive", "position": 2, "confidence": 0.9999999999894467, "expected": "positive", "correct": true}
+{"case": 4, "order": ["positive", "negative", "neutral"], "value": "negative", "position": 1, "confidence": 0.9999999998609654, "expected": "negative", "correct": true}
+{"case": 4, "order": ["positive", "neutral", "negative"], "value": "negative", "position": 2, "confidence": 0.9999999999779137, "expected": "negative", "correct": true}
+{"case": 4, "order": ["negative", "positive", "neutral"], "value": "negative", "position": 0, "confidence": 0.9999999999864493, "expected": "negative", "correct": true}
+{"case": 4, "order": ["negative", "neutral", "positive"], "value": "negative", "position": 0, "confidence": 0.9999999999275917, "expected": "negative", "correct": true}
+{"case": 4, "order": ["neutral", "positive", "negative"], "value": "negative", "position": 2, "confidence": 0.9999999999961253, "expected": "negative", "correct": true}
+{"case": 4, "order": ["neutral", "negative", "positive"], "value": "negative", "position": 1, "confidence": 0.999999999992552, "expected": "negative", "correct": true}
+{"case": 5, "order": ["positive", "negative", "neutral"], "value": "neutral", "position": 2, "confidence": 0.9999999999618785, "expected": "neutral", "correct": true}
+{"case": 5, "order": ["positive", "neutral", "negative"], "value": "neutral", "position": 1, "confidence": 0.9999999804264844, "expected": "neutral", "correct": true}
+{"case": 5, "order": ["negative", "positive", "neutral"], "value": "neutral", "position": 2, "confidence": 0.9820137860249584, "expected": "neutral", "correct": true}
+{"case": 5, "order": ["negative", "neutral", "positive"], "value": "positive", "position": 2, "confidence": 0.9968273169199703, "expected": "neutral", "correct": false}
+{"case": 5, "order": ["neutral", "positive", "negative"], "value": "neutral", "position": 0, "confidence": 0.9999999928042083, "expected": "neutral", "correct": true}
+{"case": 5, "order": ["neutral", "negative", "positive"], "value": "neutral", "position": 0, "confidence": 0.9999999999837876, "expected": "neutral", "correct": true}
+{"case": 6, "order": ["english", "chinese", "japanese"], "value": "chinese", "position": 1, "confidence": 0.9999999999255025, "expected": "chinese", "correct": true}
+{"case": 6, "order": ["english", "japanese", "chinese"], "value": "chinese", "position": 2, "confidence": 0.9999999999990183, "expected": "chinese", "correct": true}
+{"case": 6, "order": ["chinese", "english", "japanese"], "value": "chinese", "position": 0, "confidence": 0.9999999999797542, "expected": "chinese", "correct": true}
+{"case": 6, "order": ["chinese", "japanese", "english"], "value": "chinese", "position": 0, "confidence": 0.9999999999675004, "expected": "chinese", "correct": true}
+{"case": 6, "order": ["japanese", "english", "chinese"], "value": "chinese", "position": 2, "confidence": 0.9999999999980764, "expected": "chinese", "correct": true}
+{"case": 6, "order": ["japanese", "chinese", "english"], "value": "chinese", "position": 1, "confidence": 0.9999999998741727, "expected": "chinese", "correct": true}
+{"case": 7, "order": ["yes", "no"], "value": "yes", "position": 0, "confidence": 0.9999999999954912, "expected": "yes", "correct": true}
+{"case": 7, "order": ["no", "yes"], "value": "yes", "position": 1, "confidence": 0.999999999868235, "expected": "yes", "correct": true}
+{"case": 8, "order": ["yes", "no"], "value": "no", "position": 1, "confidence": 0.999999999979793, "expected": "no", "correct": true}
+{"case": 8, "order": ["no", "yes"], "value": "no", "position": 0, "confidence": 0.9999999999996734, "expected": "no", "correct": true}

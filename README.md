@@ -120,6 +120,15 @@ Conditional candidate probabilities are not calibrated correctness estimates.
 labels. Label order, prompts, model training and distribution shift affect results.
 Constants have no model confidence score. Schema-valid does not mean task-correct.
 
+Candidate order is measured, not just disclaimed. Across 9 cases and 46 orderings
+on Qwen3-4B, 8 cases held the same value under every permutation, and one flipped
+to a wrong value **at confidence 0.997**. Selected positions were evenly spread
+(16/15/15), so this is not a simple first-label preference: reordering only moves
+decisions the model was already close on. **`min_confidence` does not defend
+against it** — the flipped answer clears any usable threshold. If a decision
+matters, test your own labels under more than one order.
+[Measurement](results/README.md), [script](benchmarks/label_order_bias.py).
+
 ## Integration and evidence
 
 ![Deployment paths](assets/en/deployment.svg)
@@ -169,5 +178,6 @@ python docs/render_diagrams.py
 
 [Native smoke](benchmarks/smoke_native.py) runs against a loaded plugin and refuses
 to record evidence for the bridge; [bridge smoke](benchmarks/smoke_http.py) covers the
-other path. Both write to a new output directory. Preserve failed records.
+other path; [label-order bias](benchmarks/label_order_bias.py) measures how much
+candidate order moves a decision. All write to a new output directory. Preserve failed records.
 MIT licensed; vLLM retains its own license.

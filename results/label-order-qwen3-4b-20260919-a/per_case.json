@@ -1,0 +1,120 @@
+[
+  {
+    "case": 0,
+    "question": "Which team should handle this?",
+    "expected": "billing",
+    "stable": true,
+    "values_chosen": [
+      "billing"
+    ],
+    "correct_orders": 6,
+    "orders": 6,
+    "confidence_min": 0.9999999997207649,
+    "confidence_max": 0.9999999999927469
+  },
+  {
+    "case": 1,
+    "question": "Which team should handle this?",
+    "expected": "technical",
+    "stable": true,
+    "values_chosen": [
+      "technical"
+    ],
+    "correct_orders": 6,
+    "orders": 6,
+    "confidence_min": 0.9999999999664304,
+    "confidence_max": 0.9999999999995914
+  },
+  {
+    "case": 2,
+    "question": "Which team should handle this?",
+    "expected": "other",
+    "stable": true,
+    "values_chosen": [
+      "other"
+    ],
+    "correct_orders": 6,
+    "orders": 6,
+    "confidence_min": 0.9999999998916067,
+    "confidence_max": 0.9999999999997957
+  },
+  {
+    "case": 3,
+    "question": "What is the sentiment of this message?",
+    "expected": "positive",
+    "stable": true,
+    "values_chosen": [
+      "positive"
+    ],
+    "correct_orders": 6,
+    "orders": 6,
+    "confidence_min": 0.9999999997655051,
+    "confidence_max": 0.9999999999966827
+  },
+  {
+    "case": 4,
+    "question": "What is the sentiment of this message?",
+    "expected": "negative",
+    "stable": true,
+    "values_chosen": [
+      "negative"
+    ],
+    "correct_orders": 6,
+    "orders": 6,
+    "confidence_min": 0.9999999998609654,
+    "confidence_max": 0.9999999999961253
+  },
+  {
+    "case": 5,
+    "question": "What is the sentiment of this message?",
+    "expected": "neutral",
+    "stable": false,
+    "values_chosen": [
+      "neutral",
+      "positive"
+    ],
+    "correct_orders": 5,
+    "orders": 6,
+    "confidence_min": 0.9820137860249584,
+    "confidence_max": 0.9999999999837876
+  },
+  {
+    "case": 6,
+    "question": "Which language is this message written in?",
+    "expected": "chinese",
+    "stable": true,
+    "values_chosen": [
+      "chinese"
+    ],
+    "correct_orders": 6,
+    "orders": 6,
+    "confidence_min": 0.9999999998741727,
+    "confidence_max": 0.9999999999990183
+  },
+  {
+    "case": 7,
+    "question": "Is the customer asking for something urgently?",
+    "expected": "yes",
+    "stable": true,
+    "values_chosen": [
+      "yes"
+    ],
+    "correct_orders": 2,
+    "orders": 2,
+    "confidence_min": 0.999999999868235,
+    "confidence_max": 0.9999999999954912
+  },
+  {
+    "case": 8,
+    "question": "Is the customer asking for something urgently?",
+    "expected": "no",
+    "stable": true,
+    "values_chosen": [
+      "no"
+    ],
+    "correct_orders": 2,
+    "orders": 2,
+    "confidence_min": 0.999999999979793,
+    "confidence_max": 0.9999999999996734
+  }
+]

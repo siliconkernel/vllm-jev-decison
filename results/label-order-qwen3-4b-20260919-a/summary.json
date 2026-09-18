@@ -1,0 +1,14 @@
+{
+  "backend": "vllm_endpoint_plugin",
+  "model": "Qwen3-4B-Instruct-2507",
+  "cases": 9,
+  "requests": 46,
+  "stable_cases": 8,
+  "correct_requests": 45,
+  "position_histogram": {
+    "0": 16,
+    "1": 15,
+    "2": 15
+  },
+  "scope": "Candidate-order sensitivity on one model and a small fixed case set. Not a calibration study and not a general accuracy claim."
+}

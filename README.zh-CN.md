@@ -102,6 +102,12 @@ curl http://localhost:8000/plugins/jev-decison/infer \
 标签顺序、提示、模型训练与输入分布都会影响结果。常量没有模型置信分数。
 Schema 合法不等于任务判断正确。
 
+候选顺序的影响是实测过的，不只是免责声明。Qwen3-4B 上 9 个用例、46 种排列中，
+8 个用例在所有排列下结果一致，1 个翻转成错误值且**置信度 0.997**；选中位置分布
+均匀（16/15/15），所以并非简单的"偏向第一个标签"，重排只会推翻模型本就接近的判断。
+**`min_confidence` 挡不住这种翻转**。关键决策请用多种顺序自行验证。
+见[验证记录](results/README.md)与[脚本](benchmarks/label_order_bias.py)。
+
 ## 部署与验证
 
 ![部署方式](assets/zh-CN/deployment.svg)

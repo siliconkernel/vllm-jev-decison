@@ -78,6 +78,36 @@ parallelism, long context or production readiness. The vLLM build is newer than 
 0.29.0 itself was not the binary under test. Semantic pass rates are development-set
 observations on cases chosen by the author, not a held-out evaluation.
 
+## Candidate-order sensitivity
+
+`label-order-qwen3-4b-20260919-a` runs every candidate permutation of a fixed case
+set through the native plugin on Qwen3-4B-Instruct-2507, changing nothing but the
+order in which the enum values are declared.
+
+| Metric | Result |
+| --- | --- |
+| Cases / requests | 9 / 46 |
+| Cases stable under every order | 8 of 9 |
+| Correct requests | 45 of 46 |
+| Selected-position histogram | 16 / 15 / 15 |
+
+The flat histogram matters: the plugin does not simply favour the first label.
+Reordering only disturbs decisions the model was already close on. The one
+unstable case shows what that looks like:
+
+```
+"The package was delivered on Tuesday."      expected neutral
+  positive/negative/neutral -> neutral   conf 1.0000
+  negative/positive/neutral -> neutral   conf 0.9820
+  negative/neutral/positive -> positive  conf 0.9968   <- wrong, same input
+  neutral/negative/positive -> neutral   conf 1.0000
+```
+
+The wrong answer arrives at confidence 0.9968, so **no usable `min_confidence`
+threshold rejects it**. Abstention defends against a model that reports doubt; it
+does not defend against a model that is confidently order-dependent. One model,
+nine cases: this bounds nothing about other models or other label sets.
+
 ## HTTP bridge
 
 The bridge is a separate process that reaches an already-running vLLM server over
