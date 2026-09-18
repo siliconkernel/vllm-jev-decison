@@ -1,0 +1,5 @@
+{
+  "passed": 2,
+  "total": 4,
+  "scope": "Classification-only HTTP bridge: two exact semantic cases and two rejection cases. No speed, calibration, universal-model or native-plugin deployment claim."
+}

@@ -134,6 +134,9 @@ vllm-jev-decison bridge --upstream http://127.0.0.1:8000 --model /model --port 1
 The bridge backend is explicitly `http_bridge`, not native plugin deployment.
 It requires `/tokenize` and requested raw token logprobs, not structured-generation
 support. See the [guide](docs/GUIDE.md) for separate bridge/upstream authentication.
+Both paths are verified against a live model, and return identical decisions and
+token accounting for the same cases; the bridge runs were served by an upstream
+with no plugin loaded.
 
 Intended models are vLLM-supported autoregressive text models with compatible
 single-token labels and raw requested logprobs. Instruct models are the primary

@@ -78,7 +78,46 @@ parallelism, long context or production readiness. The vLLM build is newer than 
 0.29.0 itself was not the binary under test. Semantic pass rates are development-set
 observations on cases chosen by the author, not a held-out evaluation.
 
-## HTTP bridge (historical)
+## HTTP bridge
+
+The bridge is a separate process that reaches an already-running vLLM server over
+HTTP. It loads no plugin into that server: the upstream used for these runs had no
+`VLLM_PLUGINS` set, and `GET /plugins/jev-decison/capabilities` on the upstream
+returned 404 while the bridge on its own port reported backend `http_bridge`.
+
+| Run | Model | Outcome | Meaning |
+| --- | --- | --- | --- |
+| `bridge-qwen3-0.6b-20260918-a` | Qwen3-0.6B | 2/4 | Both rejection cases pass; both semantic cases fail. |
+| `bridge-qwen3-4b-20260918-a` | Qwen3-4B-Instruct-2507 | 4/4 | Same script, stronger model. |
+
+The same model/case split as the native runs: mechanism passes on both, semantics
+depend on the served model.
+
+### The two backends agree exactly
+
+Running the shared cases against Qwen3-4B through each path produces identical
+accounting, so the bridge is not a second, looser implementation:
+
+| Case | Native | Bridge |
+| --- | --- | --- |
+| `boolean` | 122 input / 1 classification | 122 input / 1 classification |
+| `typed_fields` | 387 input / 2 classification | 387 input / 2 classification |
+
+The example request also returns bit-identical confidences through both paths
+(`0.9622441968678734` for `/category`, `0.6224593312018546` for `/urgent`).
+
+### Bridge-specific behaviour confirmed
+
+- A rejected `mode` returns **HTTP 422** here, against 400 on the native server:
+  the bridge runs a plain FastAPI stack, vLLM maps request validation to 400.
+- `JEV_DECISON_UPSTREAM_API_KEY` is required when the upstream enforces a key.
+  Without it the bridge fails cleanly with `502 Upstream /v1/completions returned
+  HTTP 401`, not a crash. Note that vLLM's `--api-key` guards `/v1/*` but not
+  `/tokenize`, so the first authentication failure surfaces at the completion call.
+- `benchmarks/smoke_native.py` refuses to write a record here, reporting
+  `Refusing to record native evidence for backend http_bridge`.
+
+## HTTP bridge, earlier prototype (historical)
 
 **Historical scope:** runs a–c below predate the classification-only change. Their
 mixed/generative paths have been removed from the current API. Records are preserved

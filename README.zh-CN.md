@@ -114,6 +114,8 @@ vllm-jev-decison bridge --upstream http://127.0.0.1:8000 --model /model --port 1
 
 bridge 也仅支持分类，后端明确标记为 `http_bridge`。只要求上游支持 `/tokenize` 和
 指定 Token 的原始 logprob，不再需要结构化生成。鉴权配置见[指南](docs/GUIDE.zh-CN.md)。
+两条路径均已在真实模型上验证，相同用例下返回完全一致的判定与用量；bridge 的验证
+使用的是未加载任何插件的上游服务。
 
 面向支持自回归文本推理、单 Token 标签和原始 logprob 的兼容模型，优先使用指令模型。
 Pooling、多模态、LoRA 路由及所有 tokenizer 组合尚未验证，“兼容模型”不是“任意模型”。
