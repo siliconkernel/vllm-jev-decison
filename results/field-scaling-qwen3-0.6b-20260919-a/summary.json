@@ -1,0 +1,11 @@
+{
+  "backend": "vllm_endpoint_plugin",
+  "model": "Qwen3-0.6B",
+  "state_characters": 1025,
+  "field_growth": 32,
+  "token_growth": 108.1,
+  "tokens_per_field_growth": 3.4,
+  "cause": "Every nonroot field repeats the whole output schema for context, and that schema grows with the field count, so total input scales roughly quadratically.",
+  "prefix_cache_note": "Each case uses a unique state, so the hit rate measures sharing between the fields of one request, not a replay of an earlier request.",
+  "scope": "One model, one state length (1025 characters). Absolute numbers depend on the tokenizer, the state and the schema; the shape of the growth does not."
+}

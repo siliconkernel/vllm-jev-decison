@@ -213,7 +213,8 @@ def test_api_rejects_nonclassification_requests_without_inference():
     asyncio.run(asyncio.wait_for(run(), timeout=3))
 
 
-def test_unusable_backend_disables_routes_without_stopping_the_server():
+def test_unusable_backend_disables_routes_without_stopping_the_server(monkeypatch):
+    monkeypatch.delenv('VLLM_API_KEY', raising=False)
     async def run():
         app = FastAPI()
         plugin = DecisionPlugin()
@@ -304,3 +305,37 @@ def test_json_equality_keeps_true_and_one_apart():
 ])
 def test_joint_numeric_constraints_narrow_the_candidate_set(schema, choices):
     assert plan(schema)[0].choices == choices
+
+
+def test_object_and_array_values_are_selected_whole():
+    schema = {'type': 'object',
+              'properties': {'route': {'enum': [{'team': 'billing'}, {'team': 'tech'}]},
+                             'tags': {'enum': [['a', 'b'], ['c']]},
+                             'kind': {'const': {'report': True}}},
+              'required': ['route', 'tags', 'kind'], 'additionalProperties': False}
+    fields = plan(schema)
+    assert [f.choices for f in fields] == [
+        [{'team': 'billing'}, {'team': 'tech'}], [['a', 'b'], ['c']], [{'report': True}]]
+    assembled = assemble(fields, [f.choices[0] for f in fields])
+    assert assembled == {'route': {'team': 'billing'}, 'tags': ['a', 'b'], 'kind': {'report': True}}
+
+
+def test_duplicate_object_values_collapse_too():
+    assert plan({'enum': [{'k': 1}, {'k': 1}, {'k': 2}]})[0].choices == [{'k': 1}, {'k': 2}]
+
+
+def test_authorization_precedes_service_availability(monkeypatch):
+    """An unauthenticated caller learns nothing about backend state."""
+    monkeypatch.setenv('VLLM_API_KEY', 'configured-key')
+    async def run():
+        app = FastAPI()
+        plugin = DecisionPlugin()
+        plugin.attach_router(app)
+        await plugin.init_state(None, app.state, SimpleNamespace(api_key=None))
+        assert app.state.decision_service is None
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+            assert (await client.get('/plugins/jev-decison/capabilities')).status_code == 401
+            authorized = await client.get('/plugins/jev-decison/capabilities',
+                                          headers={'Authorization': 'Bearer configured-key'})
+            assert authorized.status_code == 503
+    asyncio.run(run())

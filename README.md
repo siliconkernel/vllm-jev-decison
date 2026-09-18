@@ -116,8 +116,15 @@ The portable backend still uses the ordinary vLLM sampler with `max_tokens=1`.
 Its one output token is counted as a **classification transport token**, even
 though its text is ignored. `generated_tokens` is always zero for this API;
 that does not mean zero output tokens or a model with a new classification head.
-Multiple fields create multiple engine requests, with at most eight active per
-API process by default. `JEV_DECISON_CONCURRENCY` (1-256) and `JEV_DECISON_TIMEOUT`
+Multiple fields create multiple engine requests, and **input cost grows faster
+than the field count**: every nonroot field repeats the whole output schema for
+context, and that schema itself grows with the field count. Measured on one model,
+going from 1 to 32 boolean fields over the same input multiplied total input
+tokens by 108, not by 32. Prefix caching recovers part of it but shrinks as fields
+are added (43% at four fields, 19% at 32), because the shared state becomes a
+smaller share of each prompt. Budget for wide schemas accordingly.
+[Measurement](results/README.md), [script](benchmarks/field_scaling_cost.py).
+At most eight requests are active per API process by default. `JEV_DECISON_CONCURRENCY` (1-256) and `JEV_DECISON_TIMEOUT`
 (1-3600 seconds) change that; the gate is per API process, so one wide request can
 delay others. `capabilities` reports the values actually in effect. vLLM may batch them. This is not one forward for all questions,
 not a sampler-bypass patch, and not retained-session KV fusion.

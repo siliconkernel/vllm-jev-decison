@@ -132,8 +132,12 @@ vllm-jev-decison bridge --upstream http://127.0.0.1:8000 --model /model --port 1
 ```
 
 bridge 也仅支持分类，后端明确标记为 `http_bridge`。只要求上游支持 `/tokenize` 和
-指定 Token 的原始 logprob，不再需要结构化生成。多字段会产生多个引擎请求，默认每个
-API 进程最多 8 个并发，可用 `JEV_DECISON_CONCURRENCY`（1-256）与 `JEV_DECISON_TIMEOUT`
+指定 Token 的原始 logprob，不再需要结构化生成。多字段会产生多个引擎请求，且**输入成本增长快于字段数**：每个非根字段都会重复完整的
+输出 Schema 作为上下文，而该 Schema 本身又随字段数增长。实测同一输入从 1 个布尔字段
+增加到 32 个，总输入 Token 增长 108 倍而非 32 倍；前缀缓存只能抵消一部分，且随字段
+增多而下降（4 字段时 43%，32 字段时 19%），因为共享的 state 在每个 prompt 中占比变小。
+宽 Schema 请按此预估成本。见[验证记录](results/README.md)与[脚本](benchmarks/field_scaling_cost.py)。
+默认每个 API 进程最多 8 个并发，可用 `JEV_DECISON_CONCURRENCY`（1-256）与 `JEV_DECISON_TIMEOUT`
 （1-3600 秒）调整；闸门按 API 进程共享，一个宽请求会延迟其他请求。实际生效值可在
 `capabilities` 中查看。鉴权配置见[指南](docs/GUIDE.zh-CN.md)。
 两条路径均已在真实模型上验证，相同用例下返回完全一致的判定与用量；bridge 的验证

@@ -1,0 +1,6 @@
+{"fields": 1, "state_characters": 1025, "input_tokens": 381, "tokens_per_field": 381, "engine_requests": 1, "prefix_cache_hit_rate": 0.084}
+{"fields": 2, "state_characters": 1025, "input_tokens": 830, "tokens_per_field": 415, "engine_requests": 2, "prefix_cache_hit_rate": 0.347}
+{"fields": 4, "state_characters": 1025, "input_tokens": 1852, "tokens_per_field": 463, "engine_requests": 4, "prefix_cache_hit_rate": 0.432}
+{"fields": 8, "state_characters": 1025, "input_tokens": 4576, "tokens_per_field": 572, "engine_requests": 8, "prefix_cache_hit_rate": 0.399}
+{"fields": 16, "state_characters": 1025, "input_tokens": 12972, "tokens_per_field": 810, "engine_requests": 16, "prefix_cache_hit_rate": 0.298}
+{"fields": 32, "state_characters": 1025, "input_tokens": 41196, "tokens_per_field": 1287, "engine_requests": 32, "prefix_cache_hit_rate": 0.193}

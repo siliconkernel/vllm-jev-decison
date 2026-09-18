@@ -144,6 +144,31 @@ not a defence**. Twelve cases on one model: mass is a usable warning sign, not a
 calibrated detector, and an attacker who optimises against it can likely keep mass
 high. Do not treat it as a security control.
 
+## Input cost against field count
+
+`field-scaling-qwen3-0.6b-20260919-a` sends the same kind of input with a growing
+number of boolean fields. Each case uses a unique `state`, so the cache figures
+measure sharing between the fields of one request rather than a replay of the
+previous case.
+
+| Fields | Input tokens | Per field | Prefix cache hit |
+| ---: | ---: | ---: | ---: |
+| 1 | 381 | 381 | 8% |
+| 2 | 830 | 415 | 35% |
+| 4 | 1852 | 463 | 43% |
+| 8 | 4576 | 572 | 40% |
+| 16 | 12972 | 810 | 30% |
+| 32 | 41196 | 1287 | 19% |
+
+**32x the fields costs 108x the input tokens.** Per-field cost rises 3.4x along
+the way, because every nonroot field carries the whole output schema for context
+and that schema grows with the field count. The cache hit rate peaks in the middle
+and falls off: the shared `state` prefix becomes a smaller fraction of each prompt
+as the per-field schema text grows.
+
+Absolute numbers depend on the tokenizer, the input length and the schema. The
+shape does not: plan wide schemas against roughly quadratic input growth.
+
 ## HTTP bridge
 
 The bridge is a separate process that reaches an already-running vLLM server over
