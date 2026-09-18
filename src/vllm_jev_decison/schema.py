@@ -38,6 +38,15 @@ def validate_schema(schema):
     Draft202012Validator.check_schema(schema)
 
 
+def distinct(values):
+    """JSON equality, so true and 1 stay separate candidates though Python compares them equal."""
+    unique = []
+    for value in values:
+        if not any(type(item) is type(value) and item == value for item in unique):
+            unique.append(value)
+    return unique
+
+
 def domain(schema):
     validator = Draft202012Validator(schema)
     if 'const' in schema:
@@ -55,7 +64,7 @@ def domain(schema):
         choices = list(range(lo, hi + 1))
     else:
         return None
-    choices = [value for value in choices if validator.is_valid(value)]
+    choices = distinct(value for value in choices if validator.is_valid(value))
     if not choices:
         raise ValueError('Finite schema has no valid candidates')
     return choices if len(choices) <= MAX_CHOICES else None

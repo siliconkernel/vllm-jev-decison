@@ -250,3 +250,57 @@ def test_capabilities_reports_effective_limits(monkeypatch):
             body = (await client.get('/plugins/jev-decison/capabilities')).json()
         assert body['timeout_seconds'] == 42 and body['concurrency'] == 8
     asyncio.run(run())
+
+
+def closed_object(count):
+    properties = {f'f{i}': {'type': 'boolean'} for i in range(count)}
+    return {'type': 'object', 'properties': properties, 'required': list(properties),
+            'additionalProperties': False}
+
+
+def nested_object(depth):
+    schema = {'type': 'boolean'}
+    for _ in range(depth):
+        schema = {'type': 'object', 'properties': {'x': schema}, 'required': ['x'],
+                  'additionalProperties': False}
+    return schema
+
+
+@pytest.mark.parametrize('schema,fields', [
+    (closed_object(32), 32),
+    ({'enum': [f'v{i}' for i in range(16)]}, 1),
+    ({'type': 'integer', 'minimum': 0, 'maximum': 15}, 1),
+    (nested_object(9), 1),
+])
+def test_documented_limits_are_accepted(schema, fields):
+    assert len(plan(schema)) == fields
+
+
+@pytest.mark.parametrize('schema', [
+    closed_object(33),
+    {'enum': [f'v{i}' for i in range(17)]},
+    {'type': 'integer', 'minimum': 0, 'maximum': 16},
+    nested_object(10),
+    {'enum': ['x' * 3000 for _ in range(16)]},
+])
+def test_beyond_documented_limits_is_rejected(schema):
+    with pytest.raises(ValueError):
+        plan(schema)
+
+
+def test_duplicate_enum_values_do_not_split_probability():
+    # Three declared values, one repeated: two labels would share one value's mass.
+    assert plan({'enum': ['a', 'a', 'b']})[0].choices == ['a', 'b']
+
+
+def test_json_equality_keeps_true_and_one_apart():
+    assert plan({'enum': [True, 1]})[0].choices == [True, 1]
+
+
+@pytest.mark.parametrize('schema,choices', [
+    ({'type': 'integer', 'minimum': 0, 'maximum': 10, 'exclusiveMaximum': 5}, [0, 1, 2, 3, 4]),
+    ({'type': 'integer', 'minimum': 0, 'maximum': 10, 'multipleOf': 3}, [0, 3, 6, 9]),
+    ({'type': 'integer', 'minimum': -3, 'maximum': 2}, [-3, -2, -1, 0, 1, 2]),
+])
+def test_joint_numeric_constraints_narrow_the_candidate_set(schema, choices):
+    assert plan(schema)[0].choices == choices

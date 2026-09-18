@@ -98,7 +98,11 @@ plugin selects the entire declared value. It does not generate their contents.
 Every completed result is validated against the root schema.
 
 Limits: 32 fields, 16 candidates per field, 64,000 input characters, 32 KB schema
-and 20 nesting levels. Draft 2020-12 is used; references are rejected in v0.1.
+and 20 JSON nesting levels. That depth counts every JSON level, not just objects:
+each nested object costs two levels, so roughly 9 levels of nested objects fit.
+Repeated `enum` values are collapsed, since two labels sharing one value would
+split its probability between them. Draft 2020-12 is used; references are
+rejected in v0.1.
 `format` is an annotation, not an enforced format checker.
 
 ## How classification works
