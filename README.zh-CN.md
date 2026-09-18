@@ -20,14 +20,16 @@
 git clone https://github.com/siliconkernel/vllm-jev-decison.git
 cd vllm-jev-decison
 pip install '.[vllm]'
-vllm-jev-decison doctor
+vllm-jev-decison doctor --model YOUR_MODEL
 export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
 vllm serve YOUR_MODEL --logprobs-mode raw_logprobs
 ```
 
 已有该版本 vLLM 时可用 `pip install .`。插件要求 `max_logprobs` 不低于 16；
 vLLM 默认值 20 已满足，只有部署中调低过才需要显式抬高。`raw_logprobs` 同样是
-vLLM 默认值，显式传入是为了默认值变化时仍然成立。allowlist 保留其他必需插件。
+vLLM 默认值，显式传入是为了默认值变化时仍然成立。`doctor --model` 会额外检查该模型是否把候选标签 A-P 编码为互不相同的单 Token
+（后端的硬性前提），不满足时以非零码退出，从而在部署前暴露问题，而不是等到接口被禁用。
+allowlist 保留其他必需插件。
 使用 `VLLM_API_KEY` 或 `--api-key` 配置鉴权。当前从本仓库安装，不代表已发布 PyPI 包。
 完整步骤与排错见[安装指南](docs/GUIDE.zh-CN.md)。
 
@@ -121,7 +123,10 @@ vllm-jev-decison bridge --upstream http://127.0.0.1:8000 --model /model --port 1
 ```
 
 bridge 也仅支持分类，后端明确标记为 `http_bridge`。只要求上游支持 `/tokenize` 和
-指定 Token 的原始 logprob，不再需要结构化生成。鉴权配置见[指南](docs/GUIDE.zh-CN.md)。
+指定 Token 的原始 logprob，不再需要结构化生成。多字段会产生多个引擎请求，默认每个
+API 进程最多 8 个并发，可用 `JEV_DECISON_CONCURRENCY`（1-256）与 `JEV_DECISON_TIMEOUT`
+（1-3600 秒）调整；闸门按 API 进程共享，一个宽请求会延迟其他请求。实际生效值可在
+`capabilities` 中查看。鉴权配置见[指南](docs/GUIDE.zh-CN.md)。
 两条路径均已在真实模型上验证，相同用例下返回完全一致的判定与用量；bridge 的验证
 使用的是未加载任何插件的上游服务。
 

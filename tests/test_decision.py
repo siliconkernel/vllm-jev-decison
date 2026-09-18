@@ -228,3 +228,25 @@ def test_unusable_backend_disables_routes_without_stopping_the_server():
                 assert response.status_code == 503
                 assert 'generation engine' in response.json()['detail']
     asyncio.run(run())
+
+
+@pytest.mark.parametrize('value,expected', [('16', 16), ('0', 8), ('999', 8), ('nonsense', 8), (None, 8)])
+def test_concurrency_reads_environment_and_rejects_out_of_range(monkeypatch, value, expected):
+    monkeypatch.delenv('JEV_DECISON_CONCURRENCY', raising=False)
+    if value is not None:
+        monkeypatch.setenv('JEV_DECISON_CONCURRENCY', value)
+    service = DecisionService(Backend())
+    assert service.concurrency == expected
+    assert service.gate._value == expected
+
+
+def test_capabilities_reports_effective_limits(monkeypatch):
+    async def run():
+        monkeypatch.setenv('JEV_DECISON_TIMEOUT', '42')
+        app = FastAPI()
+        DecisionPlugin().attach_router(app)
+        app.state.decision_service = DecisionService(Backend())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+            body = (await client.get('/plugins/jev-decison/capabilities')).json()
+        assert body['timeout_seconds'] == 42 and body['concurrency'] == 8
+    asyncio.run(run())

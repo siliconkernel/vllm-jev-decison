@@ -35,7 +35,8 @@ def attach_routes(app):
         authorize(request)
         service = require_service(request)
         return {'backend': service.backend.name, 'model': service.backend.model, 'max_choices': 16,
-                'max_fields': 32, 'modes': ['classify'], 'free_form_generation': False,
+                'max_fields': 32, 'concurrency': service.concurrency, 'timeout_seconds': service.timeout,
+                'modes': ['classify'], 'free_form_generation': False,
                 'schema_draft': '2020-12', 'schema_refs': False, 'input': 'text',
                 'probabilities': 'uncalibrated conditional label probabilities',
                 'classification': 'one engine output token per nonconstant finite field; normal sampler still used',

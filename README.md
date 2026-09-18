@@ -23,7 +23,7 @@ Target API: **vLLM 0.29.0**, Python 3.11+. Install in the server environment:
 git clone https://github.com/siliconkernel/vllm-jev-decison.git
 cd vllm-jev-decison
 pip install '.[vllm]'
-vllm-jev-decison doctor
+vllm-jev-decison doctor --model YOUR_MODEL
 export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
 vllm serve YOUR_MODEL --logprobs-mode raw_logprobs
 ```
@@ -32,7 +32,10 @@ If that vLLM version is already installed, use `pip install .`. The plugin needs
 `max_logprobs` at 16 or higher; vLLM's default of 20 already satisfies this, so
 raise it only if your deployment lowered it. `raw_logprobs` is also the vLLM
 default and is passed explicitly so the requirement survives a default change.
-Preserve other required plugins in the allowlist. Configure `VLLM_API_KEY` or vLLM `--api-key`
+`doctor --model` additionally checks that the model encodes the candidate labels
+A-P as distinct single tokens, which the backend requires; it exits non-zero when
+they do not, so a mismatch surfaces before deployment rather than as a disabled
+endpoint. Preserve other required plugins in the allowlist. Configure `VLLM_API_KEY` or vLLM `--api-key`
 for authentication. The package is installed from this repository, not a claimed
 PyPI release. [Full installation and troubleshooting guide](docs/GUIDE.md).
 
@@ -110,7 +113,9 @@ Its one output token is counted as a **classification transport token**, even
 though its text is ignored. `generated_tokens` is always zero for this API;
 that does not mean zero output tokens or a model with a new classification head.
 Multiple fields create multiple engine requests, with at most eight active per
-API process. vLLM may batch them. This is not one forward for all questions,
+API process by default. `JEV_DECISON_CONCURRENCY` (1-256) and `JEV_DECISON_TIMEOUT`
+(1-3600 seconds) change that; the gate is per API process, so one wide request can
+delay others. `capabilities` reports the values actually in effect. vLLM may batch them. This is not one forward for all questions,
 not a sampler-bypass patch, and not retained-session KV fusion.
 
 ![Confidence and validity](assets/en/confidence.svg)

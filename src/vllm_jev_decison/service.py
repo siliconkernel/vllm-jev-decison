@@ -2,6 +2,7 @@
 import asyncio
 import json
 import math
+import os
 import time
 import uuid
 
@@ -12,6 +13,15 @@ from typing import Literal
 from .schema import assemble, plan
 
 LABELS = 'ABCDEFGHIJKLMNOP'
+
+
+def env_int(name, default, low, high):
+    """Missing, malformed and out-of-range values all fall back to the default."""
+    try:
+        value = int(os.environ[name])
+    except (KeyError, ValueError):
+        return default
+    return value if low <= value <= high else default
 
 
 class DecisionRequest(BaseModel):
@@ -38,10 +48,12 @@ def distribution(scores):
 
 
 class DecisionService:
-    def __init__(self, backend, concurrency=8, timeout=180):
+    def __init__(self, backend, concurrency=None, timeout=None):
         self.backend = backend
-        self.gate = asyncio.Semaphore(concurrency)
-        self.timeout = timeout
+        # One gate per service: it bounds engine requests for the whole API process.
+        self.concurrency = concurrency or env_int('JEV_DECISON_CONCURRENCY', 8, 1, 256)
+        self.timeout = timeout or env_int('JEV_DECISON_TIMEOUT', 180, 1, 3600)
+        self.gate = asyncio.Semaphore(self.concurrency)
 
     async def decide(self, request):
         fields = plan(request.output_schema, request.mode)
