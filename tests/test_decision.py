@@ -211,3 +211,20 @@ def test_api_rejects_nonclassification_requests_without_inference():
                 assert response.status_code == 422
         assert backend.peak == 0
     asyncio.run(asyncio.wait_for(run(), timeout=3))
+
+
+def test_unusable_backend_disables_routes_without_stopping_the_server():
+    async def run():
+        app = FastAPI()
+        plugin = DecisionPlugin()
+        plugin.attach_router(app)
+        # A generation engine is required; init_state must report, not raise.
+        await plugin.init_state(None, app.state, SimpleNamespace(api_key=None))
+        assert app.state.decision_service is None
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+            for response in (await client.get('/plugins/jev-decison/capabilities'),
+                             await client.post('/plugins/jev-decison/infer',
+                                               json={'state': 'x', 'schema': {'type': 'boolean'}})):
+                assert response.status_code == 503
+                assert 'generation engine' in response.json()['detail']
+    asyncio.run(run())

@@ -1,6 +1,7 @@
 """Official vLLM EndpointPlugin entry point; no engine source mutation."""
 import asyncio
 import hmac
+import logging
 import os
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request
@@ -10,10 +11,18 @@ from .backends import BackendError, VLLMBackend
 from .service import DecisionRequest, DecisionService
 
 PREFIX = '/plugins/jev-decison'
+logger = logging.getLogger(__name__)
 
 
 def attach_routes(app):
     router = APIRouter(prefix=PREFIX)
+
+    def require_service(request):
+        service = getattr(request.app.state, 'decision_service', None)
+        if service is None:
+            raise HTTPException(503, getattr(request.app.state, 'decision_error', None)
+                                or 'Decision engine is not initialized')
+        return service
 
     def authorize(request):
         keys = getattr(request.app.state, 'decision_keys', ())
@@ -24,9 +33,7 @@ def attach_routes(app):
     @router.get('/capabilities')
     async def capabilities(request: Request):
         authorize(request)
-        service = getattr(request.app.state, 'decision_service', None)
-        if service is None:
-            raise HTTPException(503, 'Decision engine is not initialized')
+        service = require_service(request)
         return {'backend': service.backend.name, 'model': service.backend.model, 'max_choices': 16,
                 'max_fields': 32, 'modes': ['classify'], 'free_form_generation': False,
                 'schema_draft': '2020-12', 'schema_refs': False, 'input': 'text',
@@ -37,9 +44,7 @@ def attach_routes(app):
     @router.post('/infer')
     async def infer(body: DecisionRequest, request: Request):
         authorize(request)
-        service = getattr(request.app.state, 'decision_service', None)
-        if service is None:
-            raise HTTPException(503, 'Decision engine is not initialized')
+        service = require_service(request)
         async def disconnect():
             while True:
                 message = await request.receive()
@@ -77,4 +82,12 @@ class DecisionPlugin:
     async def init_state(self, engine_client, state, args):
         keys = getattr(args, 'api_key', None) or os.environ.get('VLLM_API_KEY') or []
         state.decision_keys = [keys] if isinstance(keys, str) else list(keys)
-        state.decision_service = DecisionService(VLLMBackend(engine_client, args))
+        state.decision_service = None
+        state.decision_error = None
+        try:
+            state.decision_service = DecisionService(VLLMBackend(engine_client, args))
+        except BackendError as error:
+            # This endpoint is an add-on; an unusable backend disables its routes
+            # rather than preventing the API server from starting.
+            state.decision_error = str(error)
+            logger.error('jev-decison endpoint disabled: %s', error)
