@@ -213,8 +213,7 @@ def test_api_rejects_nonclassification_requests_without_inference():
     asyncio.run(asyncio.wait_for(run(), timeout=3))
 
 
-def test_unusable_backend_disables_routes_without_stopping_the_server(monkeypatch):
-    monkeypatch.delenv('VLLM_API_KEY', raising=False)
+def test_unusable_backend_disables_routes_without_stopping_the_server():
     async def run():
         app = FastAPI()
         plugin = DecisionPlugin()
@@ -233,7 +232,6 @@ def test_unusable_backend_disables_routes_without_stopping_the_server(monkeypatc
 
 @pytest.mark.parametrize('value,expected', [('16', 16), ('0', 8), ('999', 8), ('nonsense', 8), (None, 8)])
 def test_concurrency_reads_environment_and_rejects_out_of_range(monkeypatch, value, expected):
-    monkeypatch.delenv('JEV_DECISON_CONCURRENCY', raising=False)
     if value is not None:
         monkeypatch.setenv('JEV_DECISON_CONCURRENCY', value)
     service = DecisionService(Backend())
