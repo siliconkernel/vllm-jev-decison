@@ -1,0 +1,15 @@
+{
+  "state": "My card was charged twice. Please refund the duplicate urgently.",
+  "question": "Classify this customer request.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "category": {"enum": ["billing", "technical", "other"]},
+      "urgent": {"type": "boolean"}
+    },
+    "required": ["category", "urgent"],
+    "additionalProperties": false
+  },
+  "mode": "classify",
+  "min_confidence": 0.8
+}

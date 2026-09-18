@@ -1,0 +1,36 @@
+{
+  "version": {
+    "version": "0.28.1rc1.dev137+g5ab628dd1"
+  },
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "/model",
+        "object": "model",
+        "created": 1789694207,
+        "owned_by": "vllm",
+        "root": "/model",
+        "parent": null,
+        "max_model_len": 272000,
+        "permission": [
+          {
+            "id": "modelperm-8db805f786e20d30",
+            "object": "model_permission",
+            "created": 1789694207,
+            "allow_create_engine": false,
+            "allow_sampling": true,
+            "allow_logprobs": true,
+            "allow_search_indices": false,
+            "allow_view": true,
+            "allow_fine_tuning": false,
+            "organization": "*",
+            "group": null,
+            "is_blocking": false
+          }
+        ]
+      }
+    ]
+  },
+  "validation_scope": "HTTP bridge and live model; native plugin loader was not exercised"
+}

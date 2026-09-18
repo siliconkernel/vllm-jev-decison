@@ -1,0 +1,23 @@
+{
+  "tag": "v0.29.0",
+  "git_object": {
+    "sha": "98dff2a81d747d1dba01a47f939f48c3526d4206",
+    "type": "commit",
+    "url": "https://api.github.com/repos/vllm-project/vllm/git/commits/98dff2a81d747d1dba01a47f939f48c3526d4206"
+  },
+  "files": {
+    "vllm/plugins/endpoint_plugins/interface.py": {
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/v0.29.0/vllm/plugins/endpoint_plugins/interface.py",
+      "sha256": "9293616ccd3cdf725fa087d3f76a518dba871ef2c796446990fa2a0a5fc159ee"
+    },
+    "vllm/engine/protocol.py": {
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/v0.29.0/vllm/engine/protocol.py",
+      "sha256": "9be92767b2a92bc5522c14b00750c0636950c7b99f82b99ed2bc2780bd3eae7b"
+    },
+    "vllm/sampling_params.py": {
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/v0.29.0/vllm/sampling_params.py",
+      "sha256": "2aba9ebd1c3921d601dcf94ac6a1f726e5172fe991e313cd5a69d3eaa02013fa"
+    }
+  },
+  "scope": "Source API inspection only; not a GPU plugin startup test."
+}

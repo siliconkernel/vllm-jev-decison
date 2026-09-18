@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="610" viewBox="0 0 1200 610" role="img">
+<title>Native plugin and optional HTTP bridge</title><desc>Identical request schema; different integration and validation boundaries.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8" fill="#506478"/></marker></defs>
+<rect width="1200" height="610" rx="18" fill="#f7fafc"/>
+<g font-family="Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<text x="42" y="58" font-size="30" font-weight="bold" text-anchor="start" fill="#172e43">Native plugin and optional HTTP bridge</text>
+<text x="42" y="94" font-size="18" font-weight="normal" text-anchor="start" fill="#506478">Identical request schema; different integration and validation boundaries.</text>
+<path d="M300 222 L360 222" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M760 222 L850 222" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M300 422 L360 422" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M760 422 L850 422" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="40" y="150" width="260" height="145" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="60" y="185" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">Client</text>
+<text x="60" y="220" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">HTTP request</text>
+<text x="60" y="249" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">/plugins/decision/infer</text>
+<rect x="360" y="150" width="400" height="145" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
+<text x="380" y="185" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">vLLM API process</text>
+<text x="380" y="220" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">EndpointPlugin: decision</text>
+<text x="380" y="249" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Direct EngineClient access</text>
+<rect x="850" y="150" width="310" height="145" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
+<text x="870" y="185" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">Existing engine</text>
+<text x="870" y="220" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">One loaded model</text>
+<text x="870" y="249" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">No source patch</text>
+<rect x="40" y="350" width="260" height="145" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="60" y="385" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">Client</text>
+<text x="60" y="420" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Same HTTP API</text>
+<text x="60" y="449" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Separate bridge process</text>
+<rect x="360" y="350" width="400" height="145" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
+<text x="380" y="385" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">HTTP compatibility bridge</text>
+<text x="380" y="420" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">tokenize + completions</text>
+<text x="380" y="449" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">No server restart for testing</text>
+<rect x="850" y="350" width="310" height="145" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
+<text x="870" y="385" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">Existing vLLM API</text>
+<text x="870" y="420" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Existing model server</text>
+<text x="870" y="449" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Not native plugin loading</text>
+<text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Native target: vLLM 0.29.0. GPU plugin startup remains unverified.</text>
+<text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Live DeepSeek smoke records exercise the bridge only; they are not native deployment evidence.</text>
+</g></svg>

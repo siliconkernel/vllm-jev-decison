@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="610" viewBox="0 0 1200 610" role="img">
+<title>分别理解置信分数与结构合法性</title><desc>以下数字为算术示例，不是模型实测结果。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8" fill="#506478"/></marker></defs>
+<rect width="1200" height="610" rx="18" fill="#f7fafc"/>
+<g font-family="Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<text x="42" y="58" font-size="30" font-weight="bold" text-anchor="start" fill="#172e43">分别理解置信分数与结构合法性</text>
+<text x="42" y="94" font-size="18" font-weight="normal" text-anchor="start" fill="#506478">以下数字为算术示例，不是模型实测结果。</text>
+<path d="M375 315 L425 315" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M775 315 L825 315" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="40" y="175" width="335" height="290" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="60" y="210" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">原始标签概率</text>
+<text x="60" y="245" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">P(A) = 0.001</text>
+<text x="60" y="274" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">P(B) = 0.009</text>
+<text x="60" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">其余词表概率 = 0.990</text>
+<text x="60" y="332" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">candidate_mass = 0.010</text>
+<rect x="425" y="175" width="350" height="290" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
+<text x="445" y="210" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">候选内条件概率</text>
+<text x="445" y="245" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">P(A | A,B) = 0.10</text>
+<text x="445" y="274" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">P(B | A,B) = 0.90</text>
+<text x="445" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">阈值 0.95 → 拒绝</text>
+<text x="445" y="332" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">阈值 0.80 → 接受 B</text>
+<rect x="825" y="175" width="335" height="290" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
+<text x="845" y="210" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">仍需独立验证</text>
+<text x="845" y="245" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">结构合法 ≠ 任务正确</text>
+<text x="845" y="274" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">0.90 ≠ 90% 正确率</text>
+<text x="845" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">生成字段没有置信分数</text>
+<text x="845" y="332" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">阈值仅约束分类字段</text>
+<text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">任一分类字段低于阈值：accepted=false，value=null。</text>
+<text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">decisions 中的诊断候选不能当作已接受结果使用。</text>
+</g></svg>

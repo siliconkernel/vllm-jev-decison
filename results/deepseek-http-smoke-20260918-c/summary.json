@@ -1,0 +1,5 @@
+{
+  "passed": 4,
+  "total": 4,
+  "scope": "Classify, typed fields, hybrid, and generation HTTP-bridge smoke. Only first two cases have exact semantic oracles. No speed, calibration, universal-model or native-plugin deployment claim."
+}

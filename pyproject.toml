@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vllm-decision"
+version = "0.1.0"
+description = "Typed decisions and schema-constrained inference as a vLLM endpoint plugin"
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+dependencies = ["fastapi>=0.115,<1", "pydantic>=2.10,<3", "jsonschema>=4.23,<5"]
+
+[project.urls]
+Homepage = "https://github.com/siliconkernel/vllm-decision"
+Repository = "https://github.com/siliconkernel/vllm-decision"
+Documentation = "https://github.com/siliconkernel/vllm-decision/blob/main/docs/GUIDE.md"
+Issues = "https://github.com/siliconkernel/vllm-decision/issues"
+
+[project.optional-dependencies]
+vllm = ["vllm==0.29.0"]
+test = ["pytest>=8.4,<9", "httpx>=0.28,<1", "build>=1.2,<2"]
+bridge = ["httpx>=0.28,<1", "uvicorn>=0.34,<1"]
+
+[project.entry-points."vllm.endpoint_plugins"]
+decision = "vllm_decision.plugin:DecisionPlugin"
+
+[project.scripts]
+vllm-decision = "vllm_decision.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
