@@ -54,4 +54,3 @@ def test_classification_uses_raw_requested_scores_not_sampled_token(fake_vllm):
     assert engine.params.logprob_token_ids == [65, 66]
     assert engine.aborted == ['one']
     assert result['usage']['classification_tokens'] == 1
-

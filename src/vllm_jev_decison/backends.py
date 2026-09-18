@@ -119,4 +119,3 @@ class HTTPBackend:
             raise BackendError('Expected exactly one sampled classification transport token')
         scores = [choice['logprobs']['top_logprobs'][0][f'token_id:{token}'] for token in ids]
         return {'scores': scores, 'usage': usage(result['usage']['prompt_tokens'], result['usage']['completion_tokens'])}
-
