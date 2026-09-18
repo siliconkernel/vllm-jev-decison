@@ -17,12 +17,8 @@ CASES = [
         'properties': {'category': {'enum': ['billing', 'technical', 'other']}, 'urgent': {'type': 'boolean'}},
         'required': ['category', 'urgent'], 'additionalProperties': False}, 'mode': 'classify'},
         'expected': {'category': 'billing', 'urgent': True}},
-    {'name': 'hybrid', 'request': {'state': 'The customer was charged twice and requests a refund.',
-        'question': 'Categorize the request and explain it briefly.', 'schema': {'type': 'object',
-        'properties': {'category': {'enum': ['billing', 'technical', 'other']}, 'explanation': {'type': 'string', 'maxLength': 180}},
-        'required': ['category', 'explanation'], 'additionalProperties': False}, 'mode': 'auto'}},
-    {'name': 'generation', 'request': {'state': 'The user says hello.', 'question': 'Respond with a short greeting.',
-        'schema': {'type': 'object', 'properties': {'reply': {'type': 'string'}}, 'required': ['reply'], 'additionalProperties': False}, 'mode': 'generate'}},
+    {'name': 'reject_free_text', 'request': {'state': 'hello', 'schema': {'type': 'string'}}, 'expected_status': 422},
+    {'name': 'reject_generation_mode', 'request': {'state': 'hello', 'schema': {'type': 'boolean'}, 'mode': 'generate'}, 'expected_status': 422},
 ]
 
 
@@ -41,7 +37,9 @@ async def run(args):
                 start = time.perf_counter()
                 response = await client.post('/plugins/jev-decison/infer', json=case['request'])
                 row = {'case': case, 'status': response.status_code, 'response': response.json(), 'wall_seconds': time.perf_counter() - start}
-                row['passed'] = response.status_code == 200 and row['response'].get('accepted', False)
+                row['passed'] = response.status_code == case.get('expected_status', 200)
+                if response.status_code == 200:
+                    row['passed'] &= row['response'].get('accepted', False)
                 if 'expected' in case:
                     row['passed'] &= row['response'].get('value') == case['expected']
                 rows.append(row)
@@ -51,7 +49,7 @@ async def run(args):
     finally:
         await app.state.decision_service.backend.close()
     (args.out / 'summary.json').write_text(json.dumps({'passed': sum(r['passed'] for r in rows), 'total': len(rows),
-        'scope': 'Classify, typed fields, hybrid, and generation HTTP-bridge smoke. Only first two cases have exact semantic oracles. No speed, calibration, universal-model or native-plugin deployment claim.'}, indent=2))
+        'scope': 'Classification-only HTTP bridge: two exact semantic cases and two rejection cases. No speed, calibration, universal-model or native-plugin deployment claim.'}, indent=2))
     files = sorted(args.out.iterdir())
     (args.out / 'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest() + '  ' + p.name + '\n' for p in files))
     return all(row['passed'] for row in rows)

@@ -1,31 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="610" viewBox="0 0 1200 610" role="img">
-<title>Typed decisions, two inference paths</title><desc>Same model weights. Runtime-defined questions and output schemas.</desc>
+<title>Classification only: schema to typed values</title><desc>No free-form generation. Unsupported schemas fail before model inference.</desc>
 <defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8" fill="#506478"/></marker></defs>
 <rect width="1200" height="610" rx="18" fill="#f7fafc"/>
 <g font-family="Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif">
-<text x="42" y="58" font-size="30" font-weight="bold" text-anchor="start" fill="#172e43">Typed decisions, two inference paths</text>
-<text x="42" y="94" font-size="18" font-weight="normal" text-anchor="start" fill="#506478">Same model weights. Runtime-defined questions and output schemas.</text>
-<path d="M280 250 L330 220" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<path d="M280 310 L330 410" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<path d="M700 220 L765 260" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<path d="M700 415 L765 355" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<rect x="40" y="205" width="240" height="150" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
-<text x="60" y="240" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">Request</text>
-<text x="60" y="275" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">state + question</text>
-<text x="60" y="304" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">JSON Schema</text>
-<rect x="330" y="145" width="370" height="150" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
-<text x="350" y="180" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">Finite fields → scoring</text>
-<text x="350" y="215" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">enum / boolean / bounded integer</text>
-<text x="350" y="244" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Read label logprobs; select argmax</text>
-<rect x="330" y="340" width="370" height="150" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
-<text x="350" y="375" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">Other fields → generation</text>
-<text x="350" y="410" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Free text or joint constraints</text>
-<text x="350" y="439" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Generate a schema-constrained value</text>
-<rect x="765" y="205" width="395" height="205" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
-<text x="785" y="240" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">Assemble and validate</text>
-<text x="785" y="275" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Validate the complete root schema</text>
-<text x="785" y="304" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Return accepted value or abstention</text>
-<text x="785" y="333" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Report per-field scores and usage</text>
-<text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Constants need no model call. Multiple fields use multiple engine requests, which vLLM may batch.</text>
-<text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Classification still uses the ordinary sampler with max_tokens=1; this is not a sampler-bypass patch.</text>
+<text x="42" y="58" font-size="30" font-weight="bold" text-anchor="start" fill="#172e43">Classification only: schema to typed values</text>
+<text x="42" y="94" font-size="18" font-weight="normal" text-anchor="start" fill="#506478">No free-form generation. Unsupported schemas fail before model inference.</text>
+<path d="M280 290 L330 290" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M590 260 L650 220" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M590 330 L650 415" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="40" y="220" width="240" height="150" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="60" y="255" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">Request</text>
+<text x="60" y="290" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">state + question</text>
+<text x="60" y="319" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Finite JSON Schema</text>
+<rect x="330" y="220" width="260" height="150" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="350" y="255" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">Validate and plan</text>
+<text x="350" y="290" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Check finite domains</text>
+<text x="350" y="319" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Split required fields</text>
+<rect x="650" y="145" width="510" height="150" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
+<text x="670" y="180" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">Score → select → construct</text>
+<text x="670" y="215" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">One-step label scores; candidate argmax</text>
+<text x="670" y="244" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Construct typed values and validate the schema</text>
+<rect x="650" y="350" width="510" height="150" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
+<text x="670" y="385" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">Unsupported → HTTP 422</text>
+<text x="670" y="420" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Free text, open numbers, unsupported constraints</text>
+<text x="670" y="449" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">No inference and no generative fallback</text>
+<text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Constants need no model call. Multiple finite fields use separate requests that vLLM may batch.</text>
+<text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Ordinary sampler: one classification transport token per scored field; no free-form output decoding.</text>
 </g></svg>

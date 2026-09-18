@@ -1,4 +1,4 @@
-# Installation and usage
+# Classification-only installation and usage
 
 [中文指南](GUIDE.zh-CN.md) · [Project overview](../README.md)
 
@@ -85,13 +85,12 @@ nested object to be decomposed, every property must be required and
 | `state` | Input text, up to 64,000 characters |
 | `question` | Task instruction |
 | `schema` | Draft 2020-12 output schema, without references |
-| `mode` | `classify`, `auto` (default), or `generate` |
+| `mode` | Optional; only `classify` is accepted |
 | `min_confidence` | Classification-only acceptance threshold, default 0 |
-| `max_tokens` | Output budget per generated field, default 512, maximum 4096 |
 
-Use `classify` to prohibit free-form generation. Use `auto` to classify finite
-fields and generate free-form subtrees. Use `generate` for whole-schema generation,
-including a controlled baseline when you evaluate quality and cost.
+All fields must have finite candidate domains. Free text, open numbers, optional
+fields and unsupported joint constraints are rejected before inference. `auto`,
+`generate` and `max_tokens` are rejected; there is no generation or fallback.
 
 The standard-library Python client uses its own configuration names:
 
@@ -111,12 +110,13 @@ are diagnostic proposals. Handle that case with your own review or fallback poli
 The plugin does not automatically generate a replacement answer after abstention.
 
 A classified field exposes its selected value, conditional `confidence`, all
-candidate probabilities/logprobs, and `candidate_mass`. A generated field has
-`confidence=null`; passing a classification threshold does not establish its quality.
+candidate probabilities/logprobs, and `candidate_mass`. A constant field has
+`confidence=null` because its value is constructed without model inference.
 No confidence number is a calibrated probability of correctness.
 
 `usage` separates `input_tokens`, `classification_tokens`, `generated_tokens` and
-`engine_requests`. Several fields can run concurrently but remain separate model
+`engine_requests`. `generated_tokens` is always zero, while each scored field
+still consumes one classification transport token. Several fields can run concurrently but remain separate model
 requests. Compare total work, accuracy and elapsed time; fewer output tokens alone
 are not proof of acceleration. Failed requests can consume work without a final
 usage response.
@@ -135,8 +135,7 @@ vllm-jev-decison bridge --upstream http://127.0.0.1:8000 \
 
 Use the same routes on port 18186. Set `JEV_DECISON_URL=http://127.0.0.1:18186` for the
 Python client. The capabilities endpoint must report `http_bridge`.
-The upstream must provide `/tokenize`, requested-token logprobs, and structured
-outputs. It must use raw logprobs; the bridge cannot verify that startup setting.
+The upstream must provide `/tokenize`, requested-token logprobs, only. It must use raw logprobs; the bridge cannot verify that startup setting.
 The bridge ignores proxy environment variables and connects directly.
 
 ## Troubleshooting
@@ -146,8 +145,8 @@ The bridge ignores proxy environment variables and connects directly.
 | `doctor` reports missing vLLM | Install the native extra in the server environment, or use the bridge explicitly |
 | Plugin route returns 404 | Check `VLLM_PLUGINS`, installed entry points, vLLM version and startup logs |
 | HTTP 401 | Use the configured Bearer key; bridge and upstream keys are separate |
-| HTTP 422 | Check schema limits, unsupported references or nonfinite fields in `classify` mode |
-| HTTP 502 | Inspect upstream compatibility, token labels, grammar support and output budget |
+| HTTP 422 | Check schema limits, unsupported references or nonfinite fields or unsupported modes |
+| HTTP 502 | Inspect upstream compatibility, token labels, requested raw logprobs and candidate-token compatibility |
 | HTTP 504 | The overall inference deadline expired; inspect engine load and task size |
 | `accepted=false` | The classification threshold rejected at least one field; do not dispatch diagnostic values |
 | Valid output but wrong answer | Evaluate model/task fit and prompts; Schema validation is not semantic verification |

@@ -8,21 +8,19 @@ from fastapi import FastAPI
 
 from vllm_jev_decison.backends import BackendError, VLLMBackend, check_labels
 from vllm_jev_decison.plugin import DecisionPlugin
-from vllm_jev_decison.schema import assemble, plan, strict_json
+from vllm_jev_decison.schema import assemble, plan
 from vllm_jev_decison.service import DecisionRequest, DecisionService, distribution
 
 
 class Backend:
     model = 'fake-model'
     name = 'test-only'
-    def __init__(self, scores=None, text='"hello"', wait=0):
+    def __init__(self, scores=None, wait=0):
         self.scores = scores or [-2.0, -1.0]
-        self.text = text
         self.wait = wait
         self.active = 0
         self.peak = 0
         self.cancelled = 0
-        self.generated = 0
     async def classify(self, messages, labels, request_id):
         self.active += 1
         self.peak = max(self.peak, self.active)
@@ -34,9 +32,6 @@ class Backend:
             raise
         finally:
             self.active -= 1
-    async def generate(self, messages, schema, limit, request_id):
-        self.generated += 1
-        return {'text': self.text, 'usage': {'input_tokens': 15, 'classification_tokens': 0, 'generated_tokens': 4, 'engine_requests': 1}}
 
 
 def request(schema, **kwargs):
@@ -59,8 +54,7 @@ def test_finite_nested_plan_and_assembly():
     {'type': 'object', 'properties': {'optional': {'type': 'boolean'}}},
     {**closed({'a': {'type': 'boolean'}}), 'if': {'properties': {'a': {'const': True}}}, 'then': {'maxProperties': 0}},
 ])
-def test_nonfinite_or_joint_constraints_generate_as_whole(schema):
-    assert plan(schema)[0].choices is None
+def test_nonfinite_or_joint_constraints_are_rejected(schema):
     with pytest.raises(ValueError):
         plan(schema, 'classify')
 
@@ -72,10 +66,6 @@ def test_nonfinite_or_joint_constraints_generate_as_whole(schema):
 def test_unsupported_or_empty_schema_fails(schema):
     with pytest.raises(ValueError):
         plan(schema)
-
-
-def test_explicit_generate_does_not_classify():
-    assert plan({'type': 'boolean'}, 'generate')[0].choices is None
 
 
 def test_probabilities_are_conditional_and_mass_is_separate():
@@ -109,14 +99,6 @@ def test_low_confidence_abstains_without_dispatchable_value():
     assert result['decisions'][0]['value'] is True
 
 
-def test_mixed_schema_and_no_confidence_for_generation():
-    schema = closed({'flag': {'type': 'boolean'}, 'message': {'type': 'string'}})
-    result = asyncio.run(DecisionService(Backend()).decide(request(schema)))
-    assert result['value'] == {'flag': True, 'message': 'hello'}
-    assert result['decisions'][1]['confidence'] is None
-    assert result['usage']['generated_tokens'] == 4
-
-
 def test_constant_does_not_use_model():
     result = asyncio.run(DecisionService(Backend()).decide(request({'const': {'status': 'fixed'}})))
     assert result['value'] == {'status': 'fixed'} and result['usage']['engine_requests'] == 0
@@ -129,12 +111,6 @@ def test_timeout_cancels_children():
             await DecisionService(backend, timeout=0.01).decide(request(closed({'a': {'type': 'boolean'}, 'b': {'type': 'boolean'}})))
         assert backend.active == 0 and backend.cancelled == 2
     asyncio.run(run())
-
-
-@pytest.mark.parametrize('text', ['{"a":1,"a":2}', 'NaN', 'Infinity', '{"a":NaN}'])
-def test_invalid_json_rejected(text):
-    with pytest.raises(ValueError):
-        strict_json(text)
 
 
 def test_labels_are_checked():
@@ -196,7 +172,42 @@ def test_disconnect_cancels_engine_work():
     asyncio.run(run())
 
 
-def test_generation_is_validated_not_just_parsed():
-    from jsonschema.exceptions import ValidationError
+@pytest.mark.parametrize('mode', ['auto', 'generate'])
+def test_generative_modes_rejected(mode):
+    from pydantic import ValidationError
     with pytest.raises(ValidationError):
-        asyncio.run(DecisionService(Backend(text='123')).decide(request({'type': 'string'})))
+        request({'type': 'boolean'}, mode=mode)
+    with pytest.raises(ValueError, match='Only classification'):
+        plan({'type': 'boolean'}, mode)
+
+
+def test_mixed_schema_is_rejected_before_any_model_call():
+    backend = Backend()
+    schema = closed({'flag': {'type': 'boolean'}, 'free_text': {'type': 'string'}})
+    with pytest.raises(ValueError, match='finite'):
+        asyncio.run(DecisionService(backend).decide(request(schema)))
+    assert backend.peak == 0
+
+
+def test_backends_do_not_expose_generation():
+    from vllm_jev_decison.backends import HTTPBackend
+    assert not hasattr(VLLMBackend, 'generate')
+    assert not hasattr(HTTPBackend, 'generate')
+
+
+def test_api_rejects_nonclassification_requests_without_inference():
+    async def run():
+        app = FastAPI()
+        DecisionPlugin().attach_router(app)
+        backend = Backend()
+        app.state.decision_service = DecisionService(backend)
+        app.state.decision_keys = []
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+            capabilities = (await client.get('/plugins/jev-decison/capabilities')).json()
+            assert capabilities['modes'] == ['classify'] and capabilities['free_form_generation'] is False
+            for extra in ({'mode': 'auto'}, {'mode': 'generate'}, {'max_tokens': 100}, {'schema': {'type': 'string'}}):
+                payload = {'state': 'hello', 'schema': {'type': 'boolean'}, **extra}
+                response = await client.post('/plugins/jev-decison/infer', json=payload)
+                assert response.status_code == 422
+        assert backend.peak == 0
+    asyncio.run(asyncio.wait_for(run(), timeout=3))

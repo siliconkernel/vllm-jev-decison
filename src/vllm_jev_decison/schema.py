@@ -1,4 +1,4 @@
-"""Conservative finite-domain planning; unknown constraints stay with generation."""
+"""Finite-domain schema planning; unsupported outputs fail before inference."""
 from dataclasses import dataclass
 import json
 from typing import Any
@@ -14,20 +14,7 @@ ANNOTATIONS = {'title', 'description', '$comment', 'default', 'examples', '$sche
 class Field:
     path: tuple[str, ...]
     schema: dict
-    choices: list[Any] | None
-
-
-def strict_json(text):
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError('Duplicate JSON key: ' + key)
-            result[key] = value
-        return result
-    def invalid(value):
-        raise ValueError('Non-finite JSON number: ' + value)
-    return json.loads(text, object_pairs_hook=unique, parse_constant=invalid)
+    choices: list[Any]
 
 
 def validate_schema(schema):
@@ -74,27 +61,27 @@ def domain(schema):
     return choices if len(choices) <= MAX_CHOICES else None
 
 
-def plan(schema, mode='auto'):
+def plan(schema, mode='classify'):
+    if mode != 'classify':
+        raise ValueError('Only classification is supported')
     validate_schema(schema)
     fields = []
     def visit(node, path):
         candidates = domain(node)
-        if candidates is not None and mode != 'generate':
+        if candidates is not None:
             fields.append(Field(path, node, candidates))
             return
         simple = set(node) <= ANNOTATIONS | {'type', 'properties', 'required', 'additionalProperties'}
         properties = node.get('properties', {})
         required = node.get('required', [])
         closed = node.get('additionalProperties') is False and set(required) == set(properties)
-        if mode != 'generate' and node.get('type') == 'object' and simple and closed and properties:
+        if node.get('type') == 'object' and simple and closed and properties:
             for name, child in properties.items():
                 if not isinstance(child, dict):
                     raise ValueError('Boolean property schemas are not supported')
                 visit(child, path + (name,))
         else:
-            if mode == 'classify':
-                raise ValueError('Classification-only mode needs finite fields in required, closed objects')
-            fields.append(Field(path, node, None))
+            raise ValueError('Only finite fields in required, closed objects are supported; generation is not available')
     visit(schema, ())
     if len(fields) > MAX_FIELDS:
         raise ValueError(f'Schema requires more than {MAX_FIELDS} inference fields')

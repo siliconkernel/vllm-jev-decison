@@ -1,31 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="610" viewBox="0 0 1200 610" role="img">
-<title>类型化判断，两条推理路径</title><desc>复用模型权重，在请求时定义问题与输出 Schema。</desc>
+<title>纯分类：从 Schema 到类型值</title><desc>不生成自由内容，不支持的 Schema 在模型推理前拒绝。</desc>
 <defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8" fill="#506478"/></marker></defs>
 <rect width="1200" height="610" rx="18" fill="#f7fafc"/>
 <g font-family="Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif">
-<text x="42" y="58" font-size="30" font-weight="bold" text-anchor="start" fill="#172e43">类型化判断，两条推理路径</text>
-<text x="42" y="94" font-size="18" font-weight="normal" text-anchor="start" fill="#506478">复用模型权重，在请求时定义问题与输出 Schema。</text>
-<path d="M280 250 L330 220" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<path d="M280 310 L330 410" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<path d="M700 220 L765 260" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<path d="M700 415 L765 355" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-<rect x="40" y="205" width="240" height="150" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
-<text x="60" y="240" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">请求</text>
-<text x="60" y="275" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">state + question</text>
-<text x="60" y="304" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">JSON Schema</text>
-<rect x="330" y="145" width="370" height="150" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
-<text x="350" y="180" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">有限字段 → 候选打分</text>
-<text x="350" y="215" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">枚举 / 布尔 / 小范围整数</text>
-<text x="350" y="244" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">读取标签 logprob，选择最高分</text>
-<rect x="330" y="340" width="370" height="150" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
-<text x="350" y="375" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">其他字段 → 约束生成</text>
-<text x="350" y="410" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">自由文本或联合约束</text>
-<text x="350" y="439" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">生成符合 Schema 的类型值</text>
-<rect x="765" y="205" width="395" height="205" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
-<text x="785" y="240" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">组装与校验</text>
-<text x="785" y="275" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">校验完整根 Schema</text>
-<text x="785" y="304" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">返回接受的结果或拒绝状态</text>
-<text x="785" y="333" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">报告逐字段分数与用量</text>
-<text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">常量无需模型调用。多个字段对应多个引擎请求，可由 vLLM 批处理。</text>
-<text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">分类仍使用普通 sampler 的 max_tokens=1，不是绕过采样器的专用补丁。</text>
+<text x="42" y="58" font-size="30" font-weight="bold" text-anchor="start" fill="#172e43">纯分类：从 Schema 到类型值</text>
+<text x="42" y="94" font-size="18" font-weight="normal" text-anchor="start" fill="#506478">不生成自由内容，不支持的 Schema 在模型推理前拒绝。</text>
+<path d="M280 290 L330 290" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M590 260 L650 220" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M590 330 L650 415" stroke="#506478" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="40" y="220" width="240" height="150" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="60" y="255" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">请求</text>
+<text x="60" y="290" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">state + question</text>
+<text x="60" y="319" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">有限候选 JSON Schema</text>
+<rect x="330" y="220" width="260" height="150" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
+<text x="350" y="255" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">验证与规划</text>
+<text x="350" y="290" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">检查有限候选域</text>
+<text x="350" y="319" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">拆分必填字段</text>
+<rect x="650" y="145" width="510" height="150" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
+<text x="670" y="180" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">打分 → 选择 → 构造</text>
+<text x="670" y="215" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">读取单步标签分数，选择候选最高分</text>
+<text x="670" y="244" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">程序构造类型值，校验完整 Schema</text>
+<rect x="650" y="350" width="510" height="150" rx="12" fill="white" stroke="#b36718" stroke-width="2"/>
+<text x="670" y="385" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">不支持的结构 → HTTP 422</text>
+<text x="670" y="420" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">自由文本、开放数值、不支持的约束</text>
+<text x="670" y="449" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">不执行推理，也不回退到生成</text>
+<text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">常量无需模型调用。多个有限字段对应独立请求，可由 vLLM 批处理。</text>
+<text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">普通 sampler 每个打分字段产生一个分类传输 Token，不进行自由内容解码。</text>
 </g></svg>

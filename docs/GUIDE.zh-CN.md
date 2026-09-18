@@ -1,4 +1,4 @@
-# 安装与使用指南
+# 纯分类安装与使用指南
 
 [English guide](GUIDE.md) · [项目介绍](../README.zh-CN.md)
 
@@ -77,12 +77,11 @@ curl --fail-with-body http://127.0.0.1:8000/plugins/jev-decison/infer \
 | `state` | 输入文本，最多 64,000 字符 |
 | `question` | 任务说明 |
 | `schema` | Draft 2020-12 输出结构，暂不支持引用 |
-| `mode` | `classify`、`auto`（默认）或 `generate` |
+| `mode` | 可省略；仅接受 `classify` |
 | `min_confidence` | 仅作用于分类字段的接受阈值，默认 0 |
-| `max_tokens` | 每个生成字段的输出预算，默认 512，最大 4096 |
 
-`classify` 禁止自由生成；`auto` 对有限字段分类，对其他子结构约束生成；
-`generate` 对整个 Schema 生成，也可作为受控评估中的生成基线。
+所有字段必须具有有限候选。自由文本、开放数值、可选字段及不支持的联合约束
+在推理前拒绝。`auto`、`generate` 和 `max_tokens` 均不接受，没有生成或回退路径。
 
 标准库 Python 客户端使用以下配置：
 
@@ -101,9 +100,10 @@ python examples/client.py
 由你的应用选择复核或回退策略；插件不会在拒绝后自动生成替代答案。
 
 分类字段包含候选概率、logprob、`confidence` 与 `candidate_mass`。
-生成字段的 `confidence=null`，不受分类阈值约束。候选内条件概率不是校准后的正确率。
+常量字段的 `confidence=null`，因为其值无需模型判断。候选内条件概率不是校准后的正确率。
 
 `usage` 分别统计输入 Token、分类传输 Token、生成 Token 和引擎请求数。
+`generated_tokens` 恒为零，但每个打分字段仍消耗一个分类传输 Token。
 字段可并发，但依然是多次模型请求。比较性能时应同时看总计算、正确率和耗时，
 不能只凭输出减少声称加速。失败请求可能消耗计算，但没有最终用量响应。
 
@@ -119,7 +119,7 @@ vllm-jev-decison bridge --upstream http://127.0.0.1:8000 \
 
 访问 18186 上相同的 API；Python 客户端设置
 `JEV_DECISON_URL=http://127.0.0.1:18186`。能力接口应显示 `http_bridge`。
-上游必须支持 `/tokenize`、指定 Token logprob、结构化输出，并使用原始 logprob。
+上游必须支持 `/tokenize`、指定 Token logprob，并使用原始 logprob。
 bridge 无法验证上游启动参数，且忽略 HTTP 代理环境变量，直接连接配置的地址。
 
 ## 排错
@@ -129,8 +129,8 @@ bridge 无法验证上游启动参数，且忽略 HTTP 代理环境变量，直�
 | doctor 找不到 vLLM | 在服务环境安装原生依赖，或明确使用 bridge |
 | 路由返回 404 | 检查 allowlist、安装环境、vLLM 版本及启动日志 |
 | HTTP 401 | 核对 Bearer 密钥；bridge 与上游密钥独立配置 |
-| HTTP 422 | 检查 Schema 限制、引用、classify 模式中的非有限字段 |
-| HTTP 502 | 检查上游兼容性、单 Token 标签、语法支持及生成预算 |
+| HTTP 422 | 检查 Schema 限制、引用、非有限字段或不支持的模式 |
+| HTTP 502 | 检查上游兼容性、单 Token 标签、原始 logprob 与候选 Token 支持 |
 | HTTP 504 | 整体推理超时，检查引擎负载及任务规模 |
 | accepted=false | 分类阈值拒绝了字段，不要执行诊断候选 |
 | 结构合法但判断错误 | 检查模型、任务与提示；结构校验不能代替行为正确性评估 |

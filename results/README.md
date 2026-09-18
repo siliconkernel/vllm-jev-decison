@@ -1,5 +1,10 @@
 # Validation records
 
+**Historical scope:** runs a–c below predate the classification-only change. Their
+mixed/generative paths have been removed from the current API. Records are preserved
+byte-for-byte for provenance, not as a description of current capabilities.
+The current smoke script checks classification and rejects nonfinite/generative requests.
+
 These are bounded development smoke runs against the already-running DeepSeek
 `/model` endpoint, reached through an ephemeral SSH tunnel. No engine restart,
 new weights, or vLLM plugin loading occurred. Backend: **HTTP bridge**.

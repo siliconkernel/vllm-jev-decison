@@ -6,3 +6,5 @@
 - Conditional candidate probabilities are not calibrated correctness probabilities. Schema validity is not semantic correctness.
 - Do not restart existing model services during ordinary development. Preserve existing experiments and model revisions.
 - English README is primary; keep a Chinese edition. No credentials, model weights or caches in Git.
+
+- Classification only: reject nonfinite schemas and unsupported modes before model calls. Never add generative fallback.

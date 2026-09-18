@@ -23,7 +23,7 @@
 <text x="845" y="210" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">仍需独立验证</text>
 <text x="845" y="245" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">结构合法 ≠ 任务正确</text>
 <text x="845" y="274" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">0.90 ≠ 90% 正确率</text>
-<text x="845" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">生成字段没有置信分数</text>
+<text x="845" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">常量无需模型打分</text>
 <text x="845" y="332" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">阈值仅约束分类字段</text>
 <text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">任一分类字段低于阈值：accepted=false，value=null。</text>
 <text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">decisions 中的诊断候选不能当作已接受结果使用。</text>

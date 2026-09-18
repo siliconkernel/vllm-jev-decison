@@ -32,18 +32,15 @@ def render(name, language, title, subtitle, boxes, edges, note):
 for language in ('en', 'zh-CN'):
     zh = language == 'zh-CN'
     def tr(en, cn): return cn if zh else en
-    render('architecture', language, tr('Typed decisions, two inference paths', '类型化判断，两条推理路径'),
-        tr('Same model weights. Runtime-defined questions and output schemas.', '复用模型权重，在请求时定义问题与输出 Schema。'), [
-        (40, 205, 240, 150, tr('Request', '请求'), ['state + question', 'JSON Schema'], 'ink'),
-        (330, 145, 370, 150, tr('Finite fields → scoring', '有限字段 → 候选打分'),
-         [tr('enum / boolean / bounded integer', '枚举 / 布尔 / 小范围整数'), tr('Read label logprobs; select argmax', '读取标签 logprob，选择最高分')], 'teal'),
-        (330, 340, 370, 150, tr('Other fields → generation', '其他字段 → 约束生成'),
-         [tr('Free text or joint constraints', '自由文本或联合约束'), tr('Generate a schema-constrained value', '生成符合 Schema 的类型值')], 'orange'),
-        (765, 205, 395, 205, tr('Assemble and validate', '组装与校验'),
-         [tr('Validate the complete root schema', '校验完整根 Schema'), tr('Return accepted value or abstention', '返回接受的结果或拒绝状态'), tr('Report per-field scores and usage', '报告逐字段分数与用量')], 'ink')],
-        [(280, 250, 330, 220), (280, 310, 330, 410), (700, 220, 765, 260), (700, 415, 765, 355)],
-        [tr('Constants need no model call. Multiple fields use multiple engine requests, which vLLM may batch.', '常量无需模型调用。多个字段对应多个引擎请求，可由 vLLM 批处理。'),
-         tr('Classification still uses the ordinary sampler with max_tokens=1; this is not a sampler-bypass patch.', '分类仍使用普通 sampler 的 max_tokens=1，不是绕过采样器的专用补丁。')])
+    render('architecture', language, tr('Classification only: schema to typed values', '纯分类：从 Schema 到类型值'),
+        tr('No free-form generation. Unsupported schemas fail before model inference.', '不生成自由内容，不支持的 Schema 在模型推理前拒绝。'), [
+        (40, 220, 240, 150, tr('Request', '请求'), ['state + question', tr('Finite JSON Schema', '有限候选 JSON Schema')], 'ink'),
+        (330, 220, 260, 150, tr('Validate and plan', '验证与规划'), [tr('Check finite domains', '检查有限候选域'), tr('Split required fields', '拆分必填字段')], 'ink'),
+        (650, 145, 510, 150, tr('Score → select → construct', '打分 → 选择 → 构造'), [tr('One-step label scores; candidate argmax', '读取单步标签分数，选择候选最高分'), tr('Construct typed values and validate the schema', '程序构造类型值，校验完整 Schema')], 'teal'),
+        (650, 350, 510, 150, tr('Unsupported → HTTP 422', '不支持的结构 → HTTP 422'), [tr('Free text, open numbers, unsupported constraints', '自由文本、开放数值、不支持的约束'), tr('No inference and no generative fallback', '不执行推理，也不回退到生成')], 'orange')],
+        [(280, 290, 330, 290), (590, 260, 650, 220), (590, 330, 650, 415)],
+        [tr('Constants need no model call. Multiple finite fields use separate requests that vLLM may batch.', '常量无需模型调用。多个有限字段对应独立请求，可由 vLLM 批处理。'),
+         tr('Ordinary sampler: one classification transport token per scored field; no free-form output decoding.', '普通 sampler 每个打分字段产生一个分类传输 Token，不进行自由内容解码。')])
     render('deployment', language, tr('Native plugin and optional HTTP bridge', '原生插件与可选 HTTP bridge'),
         tr('Identical request schema; different integration and validation boundaries.', '相同的请求 Schema，不同的接入方式与验证边界。'), [
         (40, 150, 260, 145, tr('Client', '客户端'), [tr('HTTP request', '发送 HTTP 请求'), '/plugins/jev-decison/infer'], 'ink'),
@@ -59,7 +56,7 @@ for language in ('en', 'zh-CN'):
         tr('Illustrative numbers below are arithmetic examples, not measured model results.', '以下数字为算术示例，不是模型实测结果。'), [
         (40, 175, 335, 290, tr('Raw label probability', '原始标签概率'), ['P(A) = 0.001', 'P(B) = 0.009', tr('Other vocabulary = 0.990', '其余词表概率 = 0.990'), 'candidate_mass = 0.010'], 'ink'),
         (425, 175, 350, 290, tr('Conditional candidates', '候选内条件概率'), ['P(A | A,B) = 0.10', 'P(B | A,B) = 0.90', tr('0.95 threshold → abstain', '阈值 0.95 → 拒绝'), tr('0.80 threshold → accept B', '阈值 0.80 → 接受 B')], 'teal'),
-        (825, 175, 335, 290, tr('Separate checks', '仍需独立验证'), [tr('Schema-valid ≠ task-correct', '结构合法 ≠ 任务正确'), tr('0.90 ≠ 90% correctness', '0.90 ≠ 90% 正确率'), tr('No score for generated fields', '生成字段没有置信分数'), tr('Threshold gates classification', '阈值仅约束分类字段')], 'orange')],
+        (825, 175, 335, 290, tr('Separate checks', '仍需独立验证'), [tr('Schema-valid ≠ task-correct', '结构合法 ≠ 任务正确'), tr('0.90 ≠ 90% correctness', '0.90 ≠ 90% 正确率'), tr('Constants need no model score', '常量无需模型打分'), tr('Threshold gates classification', '阈值仅约束分类字段')], 'orange')],
         [(375, 315, 425, 315), (775, 315, 825, 315)],
         [tr('If any classified field fails the threshold: accepted=false and value=null.', '任一分类字段低于阈值：accepted=false，value=null。'),
          tr('Diagnostic proposals in decisions must not be treated as accepted results.', 'decisions 中的诊断候选不能当作已接受结果使用。')])

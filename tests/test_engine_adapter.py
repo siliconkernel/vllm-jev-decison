@@ -55,11 +55,3 @@ def test_classification_uses_raw_requested_scores_not_sampled_token(fake_vllm):
     assert engine.aborted == ['one']
     assert result['usage']['classification_tokens'] == 1
 
-
-def test_generation_injects_schema_and_rejects_truncation(fake_vllm):
-    engine = Engine('length')
-    backend = VLLMBackend(engine, SimpleNamespace())
-    with pytest.raises(BackendError, match='did not finish'):
-        asyncio.run(backend.generate([], {'type': 'boolean'}, 100, 'two'))
-    assert engine.params.structured_outputs.json == {'type': 'boolean'}
-    assert engine.aborted == ['two']

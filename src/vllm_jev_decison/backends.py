@@ -13,9 +13,9 @@ def check_labels(ids):
     return [item[0] for item in ids]
 
 
-def usage(prompt, output, classification=False):
-    return {'input_tokens': prompt, 'classification_tokens': output if classification else 0,
-            'generated_tokens': 0 if classification else output, 'engine_requests': 1}
+def usage(prompt, output):
+    return {'input_tokens': prompt, 'classification_tokens': output,
+            'generated_tokens': 0, 'engine_requests': 1}
 
 
 class VLLMBackend:
@@ -74,17 +74,8 @@ class VLLMBackend:
             scores = [output.logprobs[0][token].logprob for token in ids]
         except KeyError as error:
             raise BackendError('Engine omitted requested candidate logprobs') from error
-        return {'scores': scores, 'usage': usage(len(tokens), 1, True)}
+        return {'scores': scores, 'usage': usage(len(tokens), 1)}
 
-    async def generate(self, messages, schema, limit, request_id):
-        from vllm import SamplingParams
-        from vllm.sampling_params import RequestOutputKind, StructuredOutputsParams
-        params = SamplingParams(temperature=0, max_tokens=limit,
-            structured_outputs=StructuredOutputsParams(json=schema), output_kind=RequestOutputKind.FINAL_ONLY)
-        tokens, output = await self._run(messages, params, request_id)
-        if output.finish_reason != 'stop':
-            raise BackendError('Schema generation did not finish; increase max_tokens')
-        return {'text': output.text, 'usage': usage(len(tokens), len(output.token_ids))}
 
 
 class HTTPBackend:
@@ -127,14 +118,5 @@ class HTTPBackend:
         if len(choice.get('token_ids', [])) != 1:
             raise BackendError('Expected exactly one sampled classification transport token')
         scores = [choice['logprobs']['top_logprobs'][0][f'token_id:{token}'] for token in ids]
-        return {'scores': scores, 'usage': usage(result['usage']['prompt_tokens'], result['usage']['completion_tokens'], True)}
+        return {'scores': scores, 'usage': usage(result['usage']['prompt_tokens'], result['usage']['completion_tokens'])}
 
-    async def generate(self, messages, schema, limit, request_id):
-        result = await self.post('/v1/chat/completions', {'model': self.model, 'messages': messages,
-            'temperature': 0, 'max_tokens': limit, 'structured_outputs': {'json': schema},
-            'chat_template_kwargs': {'enable_thinking': False, 'thinking': False}})
-        choice = result['choices'][0]
-        if choice['finish_reason'] != 'stop':
-            raise BackendError('Schema generation did not finish; increase max_tokens')
-        return {'text': choice['message']['content'],
-                'usage': usage(result['usage']['prompt_tokens'], result['usage']['completion_tokens'])}

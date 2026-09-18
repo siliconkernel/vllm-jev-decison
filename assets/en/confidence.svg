@@ -23,7 +23,7 @@
 <text x="845" y="210" font-size="21" font-weight="bold" text-anchor="start" fill="#b36718">Separate checks</text>
 <text x="845" y="245" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Schema-valid ≠ task-correct</text>
 <text x="845" y="274" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">0.90 ≠ 90% correctness</text>
-<text x="845" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">No score for generated fields</text>
+<text x="845" y="303" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Constants need no model score</text>
 <text x="845" y="332" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">Threshold gates classification</text>
 <text x="42" y="551" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">If any classified field fails the threshold: accepted=false and value=null.</text>
 <text x="42" y="577" font-size="17" font-weight="normal" text-anchor="start" fill="#506478">Diagnostic proposals in decisions must not be treated as accepted results.</text>

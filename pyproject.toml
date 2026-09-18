@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vllm-jev-decison"
 version = "0.1.0"
-description = "Typed decisions and schema-constrained inference as a vLLM endpoint plugin"
+description = "Classification-only typed decisions as a vLLM endpoint plugin"
 requires-python = ">=3.11"
 readme = "README.md"
 license = "MIT"
