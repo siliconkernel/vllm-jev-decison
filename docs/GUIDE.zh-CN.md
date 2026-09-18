@@ -16,13 +16,13 @@
 以及 vLLM 支持的平台和模型。
 
 ```bash
-git clone https://github.com/siliconkernel/vllm-decision.git
-cd vllm-decision
+git clone https://github.com/siliconkernel/vllm-jev-decison.git
+cd vllm-jev-decison
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install '.[vllm]'
-vllm-decision doctor
+vllm-jev-decison doctor
 ```
 
 `vllm` extra 固定安装 vLLM 0.29.0，相关依赖体积可能较大。
@@ -40,7 +40,7 @@ vllm-decision doctor
 ```bash
 export MODEL=/absolute/path/to/your/model
 # 在当前 shell 或部署密钥配置中设置 VLLM_API_KEY。
-export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}decision"
+export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
 vllm serve "$MODEL" --host 127.0.0.1 --port 8000 \
   --logprobs-mode raw_logprobs --max-logprobs 16
 ```
@@ -52,7 +52,7 @@ allowlist 中也要包含当前部署需要的其他插件。示例仅监听本�
 检查实际插件路由：
 
 ```bash
-curl --fail-with-body http://127.0.0.1:8000/plugins/decision/capabilities \
+curl --fail-with-body http://127.0.0.1:8000/plugins/jev-decison/capabilities \
   -H "Authorization: Bearer $VLLM_API_KEY"
 ```
 
@@ -62,7 +62,7 @@ curl --fail-with-body http://127.0.0.1:8000/plugins/decision/capabilities \
 ## 3. 调用类型化判断
 
 ```bash
-curl --fail-with-body http://127.0.0.1:8000/plugins/decision/infer \
+curl --fail-with-body http://127.0.0.1:8000/plugins/jev-decison/infer \
   -H "Authorization: Bearer $VLLM_API_KEY" \
   -H 'Content-Type: application/json' \
   --data-binary @examples/request.json
@@ -87,8 +87,8 @@ curl --fail-with-body http://127.0.0.1:8000/plugins/decision/infer \
 标准库 Python 客户端使用以下配置：
 
 ```bash
-export DECISION_URL=http://127.0.0.1:8000
-export DECISION_API_KEY="$VLLM_API_KEY"
+export JEV_DECISON_URL=http://127.0.0.1:8000
+export JEV_DECISON_API_KEY="$VLLM_API_KEY"
 python examples/client.py
 ```
 
@@ -111,14 +111,14 @@ python examples/client.py
 
 ```bash
 python -m pip install '.[bridge]'
-# 可选：DECISION_UPSTREAM_API_KEY 用于访问上游。
-# 可选：DECISION_API_KEY 用于客户端访问 bridge。
-vllm-decision bridge --upstream http://127.0.0.1:8000 \
+# 可选：JEV_DECISON_UPSTREAM_API_KEY 用于访问上游。
+# 可选：JEV_DECISON_API_KEY 用于客户端访问 bridge。
+vllm-jev-decison bridge --upstream http://127.0.0.1:8000 \
   --model /model --host 127.0.0.1 --port 18186
 ```
 
 访问 18186 上相同的 API；Python 客户端设置
-`DECISION_URL=http://127.0.0.1:18186`。能力接口应显示 `http_bridge`。
+`JEV_DECISON_URL=http://127.0.0.1:18186`。能力接口应显示 `http_bridge`。
 上游必须支持 `/tokenize`、指定 Token logprob、结构化输出，并使用原始 logprob。
 bridge 无法验证上游启动参数，且忽略 HTTP 代理环境变量，直接连接配置的地址。
 

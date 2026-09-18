@@ -46,8 +46,8 @@ for language in ('en', 'zh-CN'):
          tr('Classification still uses the ordinary sampler with max_tokens=1; this is not a sampler-bypass patch.', '分类仍使用普通 sampler 的 max_tokens=1，不是绕过采样器的专用补丁。')])
     render('deployment', language, tr('Native plugin and optional HTTP bridge', '原生插件与可选 HTTP bridge'),
         tr('Identical request schema; different integration and validation boundaries.', '相同的请求 Schema，不同的接入方式与验证边界。'), [
-        (40, 150, 260, 145, tr('Client', '客户端'), [tr('HTTP request', '发送 HTTP 请求'), '/plugins/decision/infer'], 'ink'),
-        (360, 150, 400, 145, tr('vLLM API process', 'vLLM API 进程'), [tr('EndpointPlugin: decision', 'EndpointPlugin：decision'), tr('Direct EngineClient access', '直接调用 EngineClient')], 'teal'),
+        (40, 150, 260, 145, tr('Client', '客户端'), [tr('HTTP request', '发送 HTTP 请求'), '/plugins/jev-decison/infer'], 'ink'),
+        (360, 150, 400, 145, tr('vLLM API process', 'vLLM API 进程'), [tr('EndpointPlugin: jev-decison', 'EndpointPlugin：jev-decison'), tr('Direct EngineClient access', '直接调用 EngineClient')], 'teal'),
         (850, 150, 310, 145, tr('Existing engine', '已有推理引擎'), [tr('One loaded model', '复用同一份模型'), tr('No source patch', '无需源码补丁')], 'teal'),
         (40, 350, 260, 145, tr('Client', '客户端'), [tr('Same HTTP API', '相同 HTTP API'), tr('Separate bridge process', '独立 bridge 进程')], 'ink'),
         (360, 350, 400, 145, tr('HTTP compatibility bridge', 'HTTP 兼容桥接'), ['tokenize + completions', tr('No server restart for testing', '测试无需重启已有服务')], 'orange'),

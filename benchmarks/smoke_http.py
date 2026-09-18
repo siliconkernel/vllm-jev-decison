@@ -7,7 +7,7 @@ from pathlib import Path
 import time
 
 import httpx
-from vllm_decision.cli import bridge_app
+from vllm_jev_decison.cli import bridge_app
 
 CASES = [
     {'name': 'boolean', 'request': {'state': 'The customer explicitly asks for an urgent response.',
@@ -39,7 +39,7 @@ async def run(args):
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://smoke', timeout=200) as client:
             for case in CASES:
                 start = time.perf_counter()
-                response = await client.post('/plugins/decision/infer', json=case['request'])
+                response = await client.post('/plugins/jev-decison/infer', json=case['request'])
                 row = {'case': case, 'status': response.status_code, 'response': response.json(), 'wall_seconds': time.perf_counter() - start}
                 row['passed'] = response.status_code == 200 and row['response'].get('accepted', False)
                 if 'expected' in case:

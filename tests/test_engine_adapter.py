@@ -5,7 +5,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
-from vllm_decision.backends import BackendError, VLLMBackend
+from vllm_jev_decison.backends import BackendError, VLLMBackend
 
 
 @pytest.fixture

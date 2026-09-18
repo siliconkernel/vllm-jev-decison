@@ -5,8 +5,8 @@ import os
 
 
 def doctor():
-    info = {'package': version('vllm-decision'), 'endpoint_entrypoint': any(
-        entry.name == 'decision' for entry in entry_points(group='vllm.endpoint_plugins'))}
+    info = {'package': version('vllm-jev-decison'), 'endpoint_entrypoint': any(
+        entry.name == 'jev-decison' for entry in entry_points(group='vllm.endpoint_plugins'))}
     try:
         info['vllm_version'] = version('vllm')
         from vllm.plugins.endpoint_plugins.interface import EndpointPlugin
@@ -30,7 +30,7 @@ def bridge_app(url, model, upstream_key=None, api_key=None):
     async def lifespan(app):
         yield
         await backend.close()
-    app = FastAPI(title='vllm-decision HTTP bridge (not the in-process plugin)', lifespan=lifespan)
+    app = FastAPI(title='vllm-jev-decison HTTP bridge (not the in-process plugin)', lifespan=lifespan)
     app.state.decision_keys = [api_key] if api_key else []
     app.state.decision_service = DecisionService(backend)
     attach_routes(app)
@@ -50,8 +50,8 @@ def main():
     if args.command == 'doctor':
         raise SystemExit(doctor())
     import uvicorn
-    uvicorn.run(bridge_app(args.upstream, args.model, os.environ.get('DECISION_UPSTREAM_API_KEY'),
-                           os.environ.get('DECISION_API_KEY')), host=args.host, port=args.port)
+    uvicorn.run(bridge_app(args.upstream, args.model, os.environ.get('JEV_DECISON_UPSTREAM_API_KEY'),
+                           os.environ.get('JEV_DECISON_API_KEY')), host=args.host, port=args.port)
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ from jsonschema.exceptions import SchemaError, ValidationError
 from .backends import BackendError, VLLMBackend
 from .service import DecisionRequest, DecisionService
 
-PREFIX = '/plugins/decision'
+PREFIX = '/plugins/jev-decison'
 
 
 def attach_routes(app):
@@ -68,7 +68,7 @@ def attach_routes(app):
 
 
 class DecisionPlugin:
-    name = 'decision'
+    name = 'jev-decison'
     required_tasks = ('generate',)
 
     def attach_router(self, app):

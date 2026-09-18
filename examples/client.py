@@ -1,13 +1,13 @@
-"""Standard-library client; DECISION_URL and DECISION_API_KEY configure access."""
+"""Standard-library client; JEV_DECISON_URL and JEV_DECISON_API_KEY configure access."""
 import json
 import os
 from pathlib import Path
 import urllib.request
 
 headers = {'Content-Type': 'application/json'}
-if os.environ.get('DECISION_API_KEY'):
-    headers['Authorization'] = 'Bearer ' + os.environ['DECISION_API_KEY']
-request = urllib.request.Request(os.environ.get('DECISION_URL', 'http://127.0.0.1:8000') + '/plugins/decision/infer',
+if os.environ.get('JEV_DECISON_API_KEY'):
+    headers['Authorization'] = 'Bearer ' + os.environ['JEV_DECISON_API_KEY']
+request = urllib.request.Request(os.environ.get('JEV_DECISON_URL', 'http://127.0.0.1:8000') + '/plugins/jev-decison/infer',
     data=Path(__file__).with_name('request.json').read_bytes(), headers=headers)
 with urllib.request.urlopen(request, timeout=200) as response:
     result = json.load(response)

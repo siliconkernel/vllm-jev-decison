@@ -17,13 +17,13 @@ The package is distributed through this repository; no PyPI publication is impli
 Use Python 3.11 or newer and a vLLM-supported platform and model.
 
 ```bash
-git clone https://github.com/siliconkernel/vllm-decision.git
-cd vllm-decision
+git clone https://github.com/siliconkernel/vllm-jev-decison.git
+cd vllm-jev-decison
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install '.[vllm]'
-vllm-decision doctor
+vllm-jev-decison doctor
 ```
 
 The `vllm` extra pins vLLM 0.29.0 and installs its dependencies, which can be large.
@@ -43,7 +43,7 @@ or local model directory. Do not commit the key.
 ```bash
 export MODEL=/absolute/path/to/your/model
 # Set VLLM_API_KEY in your shell or deployment secret configuration.
-export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}decision"
+export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
 vllm serve "$MODEL" --host 127.0.0.1 --port 8000 \
   --logprobs-mode raw_logprobs --max-logprobs 16
 ```
@@ -57,7 +57,7 @@ your normal maintenance process rather than running a competing copy on its GPUs
 Check the actual route, not just server health:
 
 ```bash
-curl --fail-with-body http://127.0.0.1:8000/plugins/decision/capabilities \
+curl --fail-with-body http://127.0.0.1:8000/plugins/jev-decison/capabilities \
   -H "Authorization: Bearer $VLLM_API_KEY"
 ```
 
@@ -68,7 +68,7 @@ not discovered or allowlisted; inspect the startup logs.
 ## 3. Make a typed decision
 
 ```bash
-curl --fail-with-body http://127.0.0.1:8000/plugins/decision/infer \
+curl --fail-with-body http://127.0.0.1:8000/plugins/jev-decison/infer \
   -H "Authorization: Bearer $VLLM_API_KEY" \
   -H 'Content-Type: application/json' \
   --data-binary @examples/request.json
@@ -96,8 +96,8 @@ including a controlled baseline when you evaluate quality and cost.
 The standard-library Python client uses its own configuration names:
 
 ```bash
-export DECISION_URL=http://127.0.0.1:8000
-export DECISION_API_KEY="$VLLM_API_KEY"
+export JEV_DECISON_URL=http://127.0.0.1:8000
+export JEV_DECISON_API_KEY="$VLLM_API_KEY"
 python examples/client.py
 ```
 
@@ -127,13 +127,13 @@ If you want to try an existing compatible server without restarting it:
 
 ```bash
 python -m pip install '.[bridge]'
-# Optional: DECISION_UPSTREAM_API_KEY authenticates to the upstream server.
-# Optional: DECISION_API_KEY authenticates clients to this bridge.
-vllm-decision bridge --upstream http://127.0.0.1:8000 \
+# Optional: JEV_DECISON_UPSTREAM_API_KEY authenticates to the upstream server.
+# Optional: JEV_DECISON_API_KEY authenticates clients to this bridge.
+vllm-jev-decison bridge --upstream http://127.0.0.1:8000 \
   --model /model --host 127.0.0.1 --port 18186
 ```
 
-Use the same routes on port 18186. Set `DECISION_URL=http://127.0.0.1:18186` for the
+Use the same routes on port 18186. Set `JEV_DECISON_URL=http://127.0.0.1:18186` for the
 Python client. The capabilities endpoint must report `http_bridge`.
 The upstream must provide `/tokenize`, requested-token logprobs, and structured
 outputs. It must use raw logprobs; the bridge cannot verify that startup setting.

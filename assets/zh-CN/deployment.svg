@@ -12,10 +12,10 @@
 <rect x="40" y="150" width="260" height="145" rx="12" fill="white" stroke="#172e43" stroke-width="2"/>
 <text x="60" y="185" font-size="21" font-weight="bold" text-anchor="start" fill="#172e43">客户端</text>
 <text x="60" y="220" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">发送 HTTP 请求</text>
-<text x="60" y="249" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">/plugins/decision/infer</text>
+<text x="60" y="249" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">/plugins/jev-decison/infer</text>
 <rect x="360" y="150" width="400" height="145" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
 <text x="380" y="185" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">vLLM API 进程</text>
-<text x="380" y="220" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">EndpointPlugin：decision</text>
+<text x="380" y="220" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">EndpointPlugin：jev-decison</text>
 <text x="380" y="249" font-size="18" font-weight="normal" text-anchor="start" fill="#172e43">直接调用 EngineClient</text>
 <rect x="850" y="150" width="310" height="145" rx="12" fill="white" stroke="#007f79" stroke-width="2"/>
 <text x="870" y="185" font-size="21" font-weight="bold" text-anchor="start" fill="#007f79">已有推理引擎</text>

@@ -1,4 +1,4 @@
-# vllm-decision
+# vllm-jev-decison
 
 **给兼容的 vLLM 语言模型增加“判断 + Schema”推理 API。**
 
@@ -20,11 +20,11 @@
 目标版本为 **vLLM 0.29.0**，在 API 服务所在环境安装：
 
 ```bash
-git clone https://github.com/siliconkernel/vllm-decision.git
-cd vllm-decision
+git clone https://github.com/siliconkernel/vllm-jev-decison.git
+cd vllm-jev-decison
 pip install '.[vllm]'
-vllm-decision doctor
-export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}decision"
+vllm-jev-decison doctor
+export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
 vllm serve YOUR_MODEL --logprobs-mode raw_logprobs --max-logprobs 16
 ```
 
@@ -36,7 +36,7 @@ vllm serve YOUR_MODEL --logprobs-mode raw_logprobs --max-logprobs 16
 ## 调用
 
 ```bash
-curl http://localhost:8000/plugins/decision/infer \
+curl http://localhost:8000/plugins/jev-decison/infer \
   -H 'Content-Type: application/json' \
   -d '{
     "state":"客户说：信用卡重复扣款，请紧急退款。",
@@ -62,7 +62,7 @@ curl http://localhost:8000/plugins/decision/infer \
 任何分类字段低于阈值时，`accepted=false`、`value=null`；`decisions` 中的候选仅供诊断。
 用量分别统计输入 Token、分类传输 Token、生成 Token 与引擎请求数。
 截断或不符合 Schema 的生成不会作为完整结果返回。
-`GET /plugins/decision/capabilities` 可查看后端和能力范围。
+`GET /plugins/jev-decison/capabilities` 可查看后端和能力范围。
 
 ## 支持范围
 
@@ -115,13 +115,13 @@ Pooling 模型、多模态、LoRA 路由、投机解码交互及所有 tokenizer
 
 ```bash
 pip install '.[bridge]'
-vllm-decision bridge --upstream http://127.0.0.1:8000 --model /model --port 18186
+vllm-jev-decison bridge --upstream http://127.0.0.1:8000 --model /model --port 18186
 ```
 
 访问 18186 上相同的 API。此模式明确返回 `backend=http_bridge`，不是引擎内插件。
 上游必须支持 `/tokenize`、指定 Token logprob、约束输出，并配置 `raw_logprobs`；
-bridge 无法验证上游启动参数。密钥分别使用 `DECISION_UPSTREAM_API_KEY` 与
-`DECISION_API_KEY`。默认监听本机，忽略 HTTP 代理环境变量，直接连接配置的上游。
+bridge 无法验证上游启动参数。密钥分别使用 `JEV_DECISON_UPSTREAM_API_KEY` 与
+`JEV_DECISON_API_KEY`。默认监听本机，忽略 HTTP 代理环境变量，直接连接配置的上游。
 
 ## 开发
 

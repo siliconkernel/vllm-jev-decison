@@ -1,4 +1,4 @@
-# vllm-decision
+# vllm-jev-decison
 
 **Turn a compatible vLLM-served language model into a typed decision API.**
 
@@ -22,13 +22,13 @@ It does not make every model a reliable classifier.
 Target API: **vLLM 0.29.0**. Install inside the same environment as the API server:
 
 ```bash
-git clone https://github.com/siliconkernel/vllm-decision.git
-cd vllm-decision
+git clone https://github.com/siliconkernel/vllm-jev-decison.git
+cd vllm-jev-decison
 pip install '.[vllm]'
-vllm-decision doctor
+vllm-jev-decison doctor
 
 # Include any other plugins your deployment needs in this allowlist.
-export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}decision"
+export VLLM_PLUGINS="${VLLM_PLUGINS:+$VLLM_PLUGINS,}jev-decison"
 vllm serve YOUR_MODEL \
   --logprobs-mode raw_logprobs \
   --max-logprobs 16
@@ -44,7 +44,7 @@ It reuses the running `EngineClient`; it does not load another model.
 ## Call the API
 
 ```bash
-curl http://localhost:8000/plugins/decision/infer \
+curl http://localhost:8000/plugins/jev-decison/infer \
   -H 'Content-Type: application/json' \
   -d '{
     "state": "My card was charged twice. Please refund me urgently.",
@@ -78,7 +78,7 @@ The response includes:
   engine request count, summed across fields.
 - `backend`: `vllm_endpoint_plugin` or explicitly `http_bridge`.
 
-`GET /plugins/decision/capabilities` reports the active backend and limits.
+`GET /plugins/jev-decison/capabilities` reports the active backend and limits.
 Schemas and generated values are validated before a successful result is returned.
 A truncated generation is an error, never a dispatchable partial value.
 
@@ -154,14 +154,14 @@ For testing without restarting an existing vLLM server:
 
 ```bash
 pip install '.[bridge]'
-vllm-decision bridge --upstream http://127.0.0.1:8000 --model /model --port 18186
+vllm-jev-decison bridge --upstream http://127.0.0.1:8000 --model /model --port 18186
 ```
 
-Use the same `/plugins/decision/infer` route on port 18186. This is an HTTP bridge,
+Use the same `/plugins/jev-decison/infer` route on port 18186. This is an HTTP bridge,
 **not** the native plugin. The upstream needs `/tokenize`, requested token
 logprobs and structured outputs, and must use `raw_logprobs` (the bridge cannot
-verify that startup setting). Configure `DECISION_UPSTREAM_API_KEY` and
-`DECISION_API_KEY` independently. The bridge connects directly, ignoring HTTP
+verify that startup setting). Configure `JEV_DECISON_UPSTREAM_API_KEY` and
+`JEV_DECISON_API_KEY` independently. The bridge connects directly, ignoring HTTP
 proxy environment variables. It binds to loopback by default.
 
 ## Development

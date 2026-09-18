@@ -6,10 +6,10 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from vllm_decision.backends import BackendError, VLLMBackend, check_labels
-from vllm_decision.plugin import DecisionPlugin
-from vllm_decision.schema import assemble, plan, strict_json
-from vllm_decision.service import DecisionRequest, DecisionService, distribution
+from vllm_jev_decison.backends import BackendError, VLLMBackend, check_labels
+from vllm_jev_decison.plugin import DecisionPlugin
+from vllm_jev_decison.schema import assemble, plan, strict_json
+from vllm_jev_decison.service import DecisionRequest, DecisionService, distribution
 
 
 class Backend:
@@ -151,12 +151,12 @@ def test_routes_auth_capabilities_and_schema_validation():
         app.state.decision_service = DecisionService(Backend())
         app.state.decision_keys = ['test-key']
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
-            assert (await client.get('/plugins/decision/capabilities')).status_code == 401
+            assert (await client.get('/plugins/jev-decison/capabilities')).status_code == 401
             headers = {'Authorization': 'Bearer test-key'}
-            assert (await client.get('/plugins/decision/capabilities', headers=headers)).json()['backend'] == 'test-only'
-            r = await client.post('/plugins/decision/infer', headers=headers, json={'state': 'x', 'schema': {'type': 'boolean'}})
+            assert (await client.get('/plugins/jev-decison/capabilities', headers=headers)).json()['backend'] == 'test-only'
+            r = await client.post('/plugins/jev-decison/infer', headers=headers, json={'state': 'x', 'schema': {'type': 'boolean'}})
             assert r.status_code == 200 and r.json()['value'] is True
-            r = await client.post('/plugins/decision/infer', headers=headers, json={'state': 'x', 'schema': {'$ref': 'http://no.example'}})
+            r = await client.post('/plugins/jev-decison/infer', headers=headers, json={'state': 'x', 'schema': {'$ref': 'http://no.example'}})
             assert r.status_code == 422
     asyncio.run(run())
 
@@ -187,7 +187,7 @@ def test_disconnect_cancels_engine_work():
         async def send(message):
             received.append(message)
         scope = {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST',
-                 'scheme': 'http', 'path': '/plugins/decision/infer', 'raw_path': b'/plugins/decision/infer',
+                 'scheme': 'http', 'path': '/plugins/jev-decison/infer', 'raw_path': b'/plugins/jev-decison/infer',
                  'query_string': b'', 'headers': [(b'content-type', b'application/json')],
                  'client': ('127.0.0.1', 1), 'server': ('test', 80), 'root_path': ''}
         await asyncio.wait_for(app(scope, receive, send), timeout=2)
