@@ -1,0 +1,31 @@
+{
+  "backend": "vllm_endpoint_plugin",
+  "model": "Qwen3-4B-Instruct-2507",
+  "groups": {
+    "fitting": {
+      "cases": 4,
+      "confidence_median": 1.0,
+      "confidence_min": 1.0,
+      "mass_median": 1.0,
+      "mass_max": 1.0
+    },
+    "unanswerable": {
+      "cases": 4,
+      "confidence_median": 0.9511,
+      "confidence_min": 0.8834,
+      "mass_median": 0.021576,
+      "mass_max": 0.291316
+    },
+    "steered": {
+      "cases": 4,
+      "confidence_median": 1.0,
+      "confidence_min": 1.0,
+      "mass_median": 0.165437,
+      "mass_max": 0.991419
+    }
+  },
+  "steered_decisions_changed": 3,
+  "steered_cases": 4,
+  "separation": "mass_max of the bad groups vs mass_median of fitting",
+  "scope": "One model, twelve cases. Shows that candidate_mass separates these failure modes where confidence does not; not a calibrated detector or a security control."
+}

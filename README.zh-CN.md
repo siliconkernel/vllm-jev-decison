@@ -103,7 +103,13 @@ curl http://localhost:8000/plugins/jev-decison/infer \
 
 ![概率与合法性](assets/zh-CN/confidence.svg)
 
-候选内条件概率不是校准后的正确率。`candidate_mass` 单独报告标签占词表的原始概率。
+候选内条件概率不是校准后的正确率。`candidate_mass` 单独报告标签占词表的原始概率，
+值得一并读取：它能发现置信度看不见的失败。问一个标签根本答不了的问题，置信度仍有
+0.9985，而 mass 掉到 0.000004。**请把 `state` 视为不可信输入**：其中的文本可以操纵
+判定结果——四次尝试有三次得手，且置信度全为 1.0000——system prompt 挡不住。得手的
+操纵会把 mass 压到 0.26 以下，正常判定则为 1.0，因此低 mass 是有用的告警信号，但它
+不是标定过的检测器，也不能当作安全控制。
+见[验证记录](results/README.md)与[脚本](benchmarks/candidate_mass_signal.py)。
 标签顺序、提示、模型训练与输入分布都会影响结果。常量没有模型置信分数。
 Schema 合法不等于任务判断正确。
 

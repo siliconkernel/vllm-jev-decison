@@ -119,6 +119,37 @@ candidate probabilities/logprobs, and `candidate_mass`. A constant field has
 `confidence=null` because its value is constructed without model inference.
 No confidence number is a calibrated probability of correctness.
 
+### What the two numbers are for
+
+`confidence` answers "given these labels, how much did the model prefer this one".
+`candidate_mass` answers a different question: "how much of the model's actual
+probability went to these labels at all". They fail in different places, and only
+the second one catches these two cases:
+
+| Situation | `confidence` | `candidate_mass` |
+| --- | --- | --- |
+| Question the labels fit | 1.0000 | 1.000000 |
+| Question the labels cannot answer | 0.9985 | 0.000004 |
+| `state` text steering the answer | 1.0000 | 0.003-0.26 |
+
+A threshold on `confidence` does not reject either row. Reading `candidate_mass`
+and routing low values to review does, and costs nothing extra — it is already in
+every response.
+
+### Treat `state` as untrusted input
+
+`state` frequently carries third-party text: a ticket, an email, a form. Text
+placed there **can steer the decision**. In a recorded run, three of four attempts
+changed the answer, each reported at confidence 1.0000. The system prompt tells
+the model to treat input as evidence rather than instructions; that is a mitigation,
+not a boundary.
+
+Do not feed a decision derived from untrusted text straight into an authorization,
+payment or moderation action. Low `candidate_mass` flags the attempts seen here,
+but an attacker optimising against it can likely keep mass high, so it is a signal
+for triage, not an access control. See
+[validation records](../results/README.md) for the measurements.
+
 `usage` separates `input_tokens`, `classification_tokens`, `generated_tokens` and
 `engine_requests`. `generated_tokens` is always zero, while each scored field
 still consumes one classification transport token. Several fields can run concurrently but remain separate model

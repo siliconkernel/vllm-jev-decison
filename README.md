@@ -126,7 +126,14 @@ not a sampler-bypass patch, and not retained-session KV fusion.
 
 Conditional candidate probabilities are not calibrated correctness estimates.
 `candidate_mass` separately reports raw vocabulary probability assigned to the
-labels. Label order, prompts, model training and distribution shift affect results.
+labels, and it is worth reading: it catches failures confidence cannot see. Asking
+a question the labels cannot answer still returns confidence 0.9985, while mass
+drops to 0.000004. **Treat `state` as untrusted.** Text inside it can steer the
+decision — three of four attempts did, every one at confidence 1.0000 — and the
+system prompt is not a defence. Successful steering pushed mass below 0.26 while
+normal decisions sat at 1.0, so low mass is a useful warning sign, though not a
+calibrated detector and not a security control.
+[Measurement](results/README.md), [script](benchmarks/candidate_mass_signal.py). Label order, prompts, model training and distribution shift affect results.
 Constants have no model confidence score. Schema-valid does not mean task-correct.
 
 Candidate order is measured, not just disclaimed. Across 9 cases and 46 orderings
@@ -188,5 +195,6 @@ python docs/render_diagrams.py
 [Native smoke](benchmarks/smoke_native.py) runs against a loaded plugin and refuses
 to record evidence for the bridge; [bridge smoke](benchmarks/smoke_http.py) covers the
 other path; [label-order bias](benchmarks/label_order_bias.py) measures how much
-candidate order moves a decision. All write to a new output directory. Preserve failed records.
+candidate order moves a decision; [candidate-mass signal](benchmarks/candidate_mass_signal.py)
+measures what mass detects that confidence does not. All write to a new output directory. Preserve failed records.
 MIT licensed; vLLM retains its own license.

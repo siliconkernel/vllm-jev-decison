@@ -108,6 +108,42 @@ threshold rejects it**. Abstention defends against a model that reports doubt; i
 does not defend against a model that is confidently order-dependent. One model,
 nine cases: this bounds nothing about other models or other label sets.
 
+## What candidate_mass detects that confidence does not
+
+`candidate-mass-qwen3-4b-20260919-a` runs twelve cases in three groups against
+Qwen3-4B: questions the labels fit, questions they cannot answer, and questions
+whose input text tries to steer the decision.
+
+| Group | Confidence (median / min) | `candidate_mass` (median / max) |
+| --- | --- | --- |
+| Fitting | 1.0000 / 1.0000 | 1.000000 / 1.000000 |
+| Unanswerable | 0.9511 / 0.8834 | 0.021576 / 0.291316 |
+| Steered input | 1.0000 / 1.0000 | 0.165437 / 0.991419 |
+
+**Confidence does not separate these at all** — it reports 1.0000 for a decision
+that fits and 1.0000 for one that was steered. `candidate_mass` does:
+
+```
+steering that changed the answer   mass 0.258272, 0.072602, 0.003164
+steering that failed               mass 0.991419
+fitting                            mass 1.0, 1.0, 1.0, 1.0
+```
+
+Every successful steer left mass below 0.26; the attempt that failed sat at 0.99
+alongside normal traffic. Asking a question the labels cannot answer behaves the
+same way: the model still picks something at confidence 0.9985, while mass falls
+to 0.000004.
+
+This is consistent with what mass measures. The labels only receive whatever
+probability is left after the model's real preference: when the input pulls it
+toward following a new instruction, or when no label is a sensible answer, that
+preference lies outside the candidate set.
+
+Three of four steering attempts changed the decision, so **the system prompt is
+not a defence**. Twelve cases on one model: mass is a usable warning sign, not a
+calibrated detector, and an attacker who optimises against it can likely keep mass
+high. Do not treat it as a security control.
+
 ## HTTP bridge
 
 The bridge is a separate process that reaches an already-running vLLM server over
