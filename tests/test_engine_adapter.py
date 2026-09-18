@@ -27,6 +27,9 @@ class Tokenizer:
     def encode(self, text, **kwargs):
         return [ord(text)]
     def apply_chat_template(self, messages, **kwargs):
+        # transformers 5 returns a BatchEncoding unless return_dict is disabled.
+        if kwargs.get('return_dict', True):
+            return {'input_ids': [1, 2, 3], 'attention_mask': [1, 1, 1]}
         return [1, 2, 3]
 
 
@@ -54,3 +57,8 @@ def test_classification_uses_raw_requested_scores_not_sampled_token(fake_vllm):
     assert engine.params.logprob_token_ids == [65, 66]
     assert engine.aborted == ['one']
     assert result['usage']['classification_tokens'] == 1
+
+
+def test_chat_template_returns_token_ids_under_transformers_5(fake_vllm):
+    backend = VLLMBackend(Engine(), SimpleNamespace())
+    assert backend._tokens([{'role': 'user', 'content': 'x'}]) == [1, 2, 3]

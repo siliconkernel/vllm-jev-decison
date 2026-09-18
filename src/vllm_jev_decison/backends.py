@@ -39,7 +39,7 @@ class VLLMBackend:
     def _tokens(self, messages):
         if self.template or getattr(self.tokenizer, 'chat_template', None):
             tokens = self.tokenizer.apply_chat_template(messages, chat_template=self.template, tokenize=True,
-                add_generation_prompt=True, enable_thinking=False, thinking=False)
+                add_generation_prompt=True, enable_thinking=False, thinking=False, return_dict=False)
         else:
             prompt = '\n\n'.join(message['role'].upper() + ':\n' + message['content'] for message in messages)
             tokens = self.tokenizer.encode(prompt + '\n\nASSISTANT:\n', add_special_tokens=True)
